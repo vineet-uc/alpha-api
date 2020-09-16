@@ -1663,10 +1663,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessPostAPIResponse'
+                $ref: '#/components/schemas/SuccessGetAPIResponse'
               examples:
                 Success Search API Response:
-                  $ref: "#/components/examples/SuccessResultPostSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -1857,10 +1857,6 @@ components:
               type: integer
               example: 1
               description: Result for which page number is been sent.
-            more_results:
-              type: boolean
-              example: True
-              description: Determines if there is more results to fetch or not.
             results:
               type: array
               items:
@@ -1906,6 +1902,7 @@ components:
                       - name
                       - id
                       - legacy_id
+                      - source_name
                     properties:
                       name:
                         description: "UniCourt's standardized Case Type. Full list is available in Case Type Filter API."
@@ -1920,52 +1917,57 @@ components:
                         description: "Unique Legacy Case Type ID."
                         type: integer
                         example: 12
-                  case_type_subcategory:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Type Sub-category. Full list is available in Case Type Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Bankruptcy"
-                      id:
-                        description: "Unique Case Type Sub Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Type Sub Category ID."
+                      source_name:
+                        description: "Case type which is present in the court site."
                         type: integer
                         example: 12
-                  case_type_category:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Type Category. Full list is available in Case Type Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Civil"
-                      id:
-                        description: "Unique Case Type Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Type Category ID."
-                        type: integer
-                        example: 12
+                      category:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Type Category. Full list is available in Case Type Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Civil"
+                          id:
+                            description: "Unique Case Type Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Type Category ID."
+                            type: integer
+                            example: 12
+                      subcategory:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Type Sub-category. Full list is available in Case Type Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Bankruptcy"
+                          id:
+                            description: "Unique Case Type Sub Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Type Sub Category ID."
+                            type: integer
+                            example: 12
                   case_status:
                     type: object
                     required:
                       - name
                       - id
                       - legacy_id
+                      - source_name
                     properties:
                       name:
                         description: "UniCourt's standardized Case Status. Full list is available in Case Status Filter API."
@@ -1980,32 +1982,37 @@ components:
                         description: "Unique Legacy Case Status ID."
                         type: integer
                         example: 12
-                  case_status_category:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Status Category. Full list is available in Case Status Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Pending"
-                      id:
-                        description: "Unique Case Status Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Status Category ID."
+                      source_name:
+                        description: "Case status which is present in the court site."
                         type: integer
                         example: 12
+                      category:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Status Category. Full list is available in Case Status Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Pending"
+                          id:
+                            description: "Unique Case Status Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Status Category ID."
+                            type: integer
+                            example: 12
                   courthouse:
                     type: object
                     required:
                       - name
                       - id
                       - legacy_id
+                      - source_name
                     properties:
                       name:
                         description: "UniCourt's standardized Court System. Full list is available in Jurisdiction Filter API."
@@ -2020,6 +2027,10 @@ components:
                         description: "Unique Legacy Courthouse ID."
                         type: integer
                         example: 24
+                      source_name:
+                        description: "Courthouse which is present in the court site."
+                        type: integer
+                        example: 12
                   jurisdiction:
                     type: object
                     required:
@@ -2052,337 +2063,53 @@ components:
                     type: string
                     example: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
                     description: Case ID obtained for this set of result.
-                  source_data:
+                  pages:
+                    description: "Source data from different pages in the court website."
                     type: object
                     properties:
-                      common:
-                        description: "Source data which is common across all the courts."
-                        type: object
+                      PACER_CASE_LOCATOR_RESULTS:
+                        description: "PACER_CASE_LOCATOR_RESULTS search results"
                         required:
-                          - case_type
-                          - case_status
-                          - courthouse
+                          - first_fetch
+                          - last_fetch
+                          - raw_ordered_data
+                          - extracted_fields
                         properties:
-                          case_type:
-                            description: "Source Case Type"
+                          first_fetch:
+                            description: "When was the page first fetched from the court site."
                             type: string
-                            example: "CHAPTER 13"
-                          case_status:
-                            description: "Source Case Status"
+                            example: "2020-05-08 10:17:55"
+                          last_fetch:
+                            description: "When was the page last fetched from the court site."
                             type: string
-                            example: "PENDING"
-                          courthouse:
-                            description: "Source courthouse"
-                            type: string
-                            example: "PAWBKE"
-                      pages:
-                        description: "Source data from different pages in the court website."
-                        type: object
-                        properties:
-                          PACER_CASE_LOCATOR_RESULTS:
-                            description: "PACER_CASE_LOCATOR_RESULTS search results"
-                            required:
-                              - first_fetch
-                              - last_fetch
-                              - raw_ordered_data
-                              - extracted_fields
-                            properties:
-                              first_fetch:
-                                description: "When was the page first fetched from the court site."
-                                type: string
-                                example: "2020-05-08 10:17:55"
-                              last_fetch:
-                                description: "When was the page last fetched from the court site."
-                                type: string
-                                example: "2020-05-08 10:17:55"
-                              raw_ordered_data:
-                                description: "Data in this array is ordered as it appears in source."
-                                oneOf:
-                                  - $ref: "#/components/schemas/SuccessResultRawOrderedData"
-                                  - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
-                              extracted_fields:
-                                description: "Data in this field is extracted from raw_ordered_data for easy access."
-                                oneOf:
-                                  - $ref: "#/components/schemas/SuccessResultExtractedFields"
-                                  - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
-    SuccessPostAPIResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: SUCCESS
-          description: Status of the API Response.
-        error:
-          type: string
-          example: ""
-          description: Type of Error occurred.
-        message:
-          type: string
-          example: ""
-          description: Error message.
-        data:
-          type: object
-          properties:
-            job_id:
-              type: string
-              example: "ABKDE200702060605"
-              description: Job ID for which the result is obtained.
-            pacer_search_type:
-              type: string
-              example: PACER_SEARCH_CASE
-              description: This field tells us for which type of PACER SEARCH is this result belongs to.
-            page_number:
-              type: integer
-              example: 1
-              description: Result for which page number is been sent.
+                            example: "2020-05-08 10:17:55"
+                          raw_ordered_data:
+                            description: "Data in this array is ordered as it appears in source."
+                            oneOf:
+                              - $ref: "#/components/schemas/SuccessResultRawOrderedData"
+                              - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
+                          extracted_fields:
+                            description: "Data in this field is extracted from raw_ordered_data for easy access."
+                            oneOf:
+                              - $ref: "#/components/schemas/SuccessResultExtractedFields"
+                              - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
             more_results:
-              type: boolean
-              example: True
               description: Determines if there is more results to fetch or not.
-            results:
-              type: array
-              items:
-                type: object
-                properties:
-                  case_number:
-                    description: "Case number as provided by Court."
-                    type: string
-                    maxLength: 50
-                    example:  "2:19-BK-20033"
-                  case_name:
-                    description: "Case name as provided by Court."
-                    type: string
-                    maxLength: 250
-                    example: "Mark C. Bonomi and Nicole A. Bonomi"
-                  filing_date:
-                    description: "Filing date for the case provided by the Court. Formatted as YYYY-MM-DD HH:MM:SS"
-                    type: string
-                    format: date time
-                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
-                    example: "2019-01-04 00:00:00"
-                  case_last_fetch:
-                    description: "The date and time when the case was last fetched from the Court. This date and time is in UTC. Formatted as YYYY-MM-DD HH:MM:SS Note: It is not necessary that every time the case is fetched from Court we find changes in the case information. It could be that we already have the latest information from the Court and no changes exist."
-                    type: string
-                    format: date time
-                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
-                    example: "2020-05-08 10:17:56"
-                  case_last_updates_found:
-                    description: "The date and time when the case was last fetched from the Court where we found changes in the case information. This date and time is in UTC. Formatted as YYYY-MM-DD HH:MM:SS"
-                    type: string
-                    format: date time
-                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
-                    example: "2020-04-25 10:42:46"
-                  participants_last_fetch:
-                    description: "The date and time when parties/attorneys were last fetched from the Court. Formatted as YYYY-MM-DD HH:MM:SS Note: This is currently applicable for Federal PACER cases since we have an option to exclude parties and fetch only latest docket entries when updating cases to save PACER fees."
-                    type: string
-                    format: date time
-                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
-                    example: "2020-04-25 10:42:46"
-                  case_type:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Type. Full list is available in Case Type Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Chapter 13"
-                      id:
-                        description: "Unique Case Type ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Type ID."
-                        type: integer
-                        example: 12
-                  case_type_subcategory:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Type Sub-category. Full list is available in Case Type Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Bankruptcy"
-                      id:
-                        description: "Unique Case Type Sub Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Type Sub Category ID."
-                        type: integer
-                        example: 12
-                  case_type_category:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Type Category. Full list is available in Case Type Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Civil"
-                      id:
-                        description: "Unique Case Type Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Type Category ID."
-                        type: integer
-                        example: 12
-                  case_status:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Status. Full list is available in Case Status Filter API."
-                        type: string
-                        maxLength: 250
-                        example: "Other Pending"
-                      id:
-                        description: "Unique Case Status ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Status ID."
-                        type: integer
-                        example: 12
-                  case_status_category:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Case Status Category. Full list is available in Case Status Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Pending"
-                      id:
-                        description: "Unique Case Status Category ID."
-                        type: integer
-                        example: 213
-                      legacy_id:
-                        description: "Unique Legacy Case Status Category ID."
-                        type: integer
-                        example: 12
-                  courthouse:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Court System. Full list is available in Jurisdiction Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "Pennsylvania Western Bankruptcy"
-                      id:
-                        description: "Unique Courthouse ID."
-                        type: integer
-                        example: 232
-                      legacy_id:
-                        description: "Unique Legacy Courthouse ID."
-                        type: integer
-                        example: 24
-                  jurisdiction:
-                    type: object
-                    required:
-                      - name
-                      - id
-                      - legacy_id
-                    properties:
-                      name:
-                        description: "UniCourt's standardized Court System. Full list is available in Jurisdiction Filter API."
-                        type: string
-                        maxLength: 100
-                        example: "U.S. Bankruptcy Courts"
-                      id:
-                        description: "Unique Jurisdiction ID."
-                        type: integer
-                        example: 23
-                      legacy_id:
-                        description: "Unique Legacy Jurisdiction ID."
-                        type: integer
-                        example: 2
-                  county:
-                    description: "The county that the court system belongs to. This is only applicable for State Court Systems. In case of Federal Court Systems this will be null."
-                    maxLength: 100
-                    type: string
-                    nullable: true
-                    example: null
-                  state:
-                    $ref: '#/components/schemas/PacerSearchResponseStates'
-                  case_id:
-                    type: string
-                    example: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-                    description: Case ID obtained for this set of result.
-                  source_data:
-                    type: object
-                    properties:
-                      common:
-                        description: "Source data which is common across all the courts."
-                        type: object
-                        required:
-                          - case_type
-                          - case_status
-                          - courthouse
-                        properties:
-                          case_type:
-                            description: "Source Case Type"
-                            type: string
-                            example: "CHAPTER 13"
-                          case_status:
-                            description: "Source Case Status"
-                            type: string
-                            example: "PENDING"
-                          courthouse:
-                            description: "Source courthouse"
-                            type: string
-                            example: "PAWBKE"
-                      pages:
-                        description: "Source data from different pages in the court website."
-                        type: object
-                        properties:
-                          PACER_CASE_LOCATOR_RESULTS:
-                            description: "PACER_CASE_LOCATOR_RESULTS search results"
-                            required:
-                              - first_fetch
-                              - last_fetch
-                              - raw_ordered_data
-                              - extracted_fields
-                            properties:
-                              first_fetch:
-                                description: "When was the page first fetched from the court site."
-                                type: string
-                                example: "2020-05-08 10:17:55"
-                              last_fetch:
-                                description: "When was the page last fetched from the court site."
-                                type: string
-                                example: "2020-05-08 10:17:55"
-                              raw_ordered_data:
-                                description: "Data in this array is ordered as it appears in source."
-                                oneOf:
-                                  - $ref: "#/components/schemas/SuccessResultRawOrderedData"
-                                  - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
-                              extracted_fields:
-                                description: "Data in this field is extracted from raw_ordered_data for easy access."
-                                oneOf:
-                                  - $ref: "#/components/schemas/SuccessResultExtractedFields"
-                                  - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
+              type: object
+              required:
+                - link
+                - total_pages
+                - legacy_id
+              properties:
+                link:
+                  description: "Link to the next page of PACER Search API results for a given Job ID."
+                  type: string
+                  maxLength: 100
+                  example: "https://api.unicourt.com/rest/v2/pacer/get-search-results/ABKDE200702060605/?page_number=2"
+                total_pages:
+                  description: "Total Number of pages that can be paginated to get all the results of particular Job ID."
+                  type: integer
+                  example: 97
     SuccessResultNullAPIResponse:
       type: string
       example: null
@@ -2824,7 +2551,6 @@ components:
           results_extracted: 54
           pacer_cost: "$0.10"
           page_number: 1
-          more_results: true
           results:
             - case_number: '2:19-BK-20033'
               case_name: 'Mark C. Bonomi and Nicole A. Bonomi'
@@ -2836,22 +2562,24 @@ components:
                 name: 'Chapter 13'
                 id: 12
                 legacy_id: 123
-              case_type_subcategory:
-                name: 'Bankruptcy'
-                id: 14
-                legacy_id: 2
-              case_type_category:
-                name: 'Civil'
-                id: 42
-                legacy_id: 26
+                source_name: 'CHAPTER 13'
+                subcategory:
+                  name: 'Bankruptcy'
+                  id: 14
+                  legacy_id: 2
+                category:
+                  name: 'Civil'
+                  id: 42
+                  legacy_id: 26
               case_status:
                 name: 'Other Pending'
                 id: 14
                 legacy_id: 13
-              case_status_category:
-                name: 'Pending'
-                id: 2
-                legacy_id: 2
+                source_name: 'PENDING'
+                category:
+                  name: 'Pending'
+                  id: 2
+                  legacy_id: 2
               courthouse:
                 name: 'Pennsylvania Western Bankruptcy'
                 id: 224
@@ -2860,112 +2588,108 @@ components:
                 name: 'U.S. Bankruptcy Courts'
                 id: 102
                 legacy_id: 54
+                source_name: 'PAWBKE'
               county: null
               state: 'PA'
               case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-              source_data:
-                common:
-                  case_type: 'CHAPTER 13'
-                  case_status: 'PENDING'
-                  courthouse: 'PAWBKE'
-                pages:
-                  PACER_CASE_LOCATOR_RESULTS:
-                    last_fetch: '2020-04-25 10:42:46'
-                    first_fetch: '2019-05-08 10:17:56'
-                    extracted_fields::
-                      case_number: "4960"
-                      chapter: null
-                      joint_discharged_date: null
-                      pacer_case_id: "383811"
-                      date_filed: "2019-01-04"
-                      case_year: "2019"
-                      nature_of_suit: null
-                      date_discharged: null
-                      joint_disposition_method: null
-                      case_type: "bk"
-                      case_number_full: "2:2019bk20033"
-                      case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      joint_flag: "true"
-                      date_termed: null
-                      joint_dismissed_date: null
-                      court_id: "pawb"
-                      case_office: "2"
-                      disposition_method: null
-                      date_dismissed: null
-                      case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civil_stat_terminated: "State Court"
-                      date_reopened: null
-                      mdl_date_ordered: null
-                      civil_transferee: "2007-67448"
-                      civil_date_terminated: "2016-09-27"
-                      mdl_extension: "20033"
-                      civil_date_disposition: "2016-10-04"
-                      mdl_status: null
-                      civil_cto_number: "-500"
-                      civil_stat_disposition: "NTN"
-                      mdl_littype: null
-                      mdl_court_id: "paedce"
-                      mdl_transferee: null
-                      mdl_transferee_district: null
-                      civil_date_initiated: "2016-10-04"
-                      civil_stat_initiated: "XYZ Case"
-                      mdl_date_received: null
-                      jpml_number: "875"
-                      mdl_judge_last_name: null
-                      first_name: "GREGORY"
-                      generation: null
-                      last_name: "BUNITSKY"
-                      middle_name: "N."
-                      party_role: "aty"
-                      party_type: "aty"
-                      disposition: null
-                    raw_ordered_data:
-                      caseNumber: "4960"
-                      bankruptcyChapter: null
-                      jointDischargedDate: null
-                      caseId: "383811"
-                      dateFiled: "2019-01-04"
-                      caseYear: "2019"
-                      natureOfSuit: null
-                      dateDischarged: null
-                      jointDispositionMethod: null
-                      caseType: "bk"
-                      caseNumberFull: "2:2019bk20033"
-                      caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      jointBankruptcyFlag: "true"
-                      dateTermed: null
-                      jointDismissedDate: null
-                      courtId: "pawb"
-                      caseOffice: "2"
-                      dispositionMethod: null
-                      dateDismissed: null
-                      caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civilStatTerminated: "State Court"
-                      dateReopened: null
-                      mdlDateOrdered: null
-                      civilTransferee: "2007-67448"
-                      civilDateTerminated: "2016-09-27"
-                      mdlExtension: "20033"
-                      civilDateDisposition: "2016-10-04"
-                      mdlStatus: null
-                      civilCtoNumber: "-500"
-                      civilStatDisposition: "NTN"
-                      mdlLittype: null
-                      mdlCourtId: "paedce"
-                      mdlTransferee: null
-                      mdlTransfereeDistrict: null
-                      civilDateInitiated: "2016-10-04"
-                      civilStatInitiated: "XYZ Case"
-                      mdlDateReceived: null
-                      jpmlNumber: "875"
-                      mdlJudgeLastName: null
-                      firstName: "GREGORY"
-                      generation: null
-                      lastName: "BUNITSKY"
-                      middleName: "N."
-                      partyRole: "aty"
-                      partyType: "aty"
-                      disposition: null
+              pages:
+                PACER_CASE_LOCATOR_RESULTS:
+                  last_fetch: '2020-04-25 10:42:46'
+                  first_fetch: '2019-05-08 10:17:56'
+                  extracted_fields::
+                    case_number: "4960"
+                    chapter: null
+                    joint_discharged_date: null
+                    pacer_case_id: "383811"
+                    date_filed: "2019-01-04"
+                    case_year: "2019"
+                    nature_of_suit: null
+                    date_discharged: null
+                    joint_disposition_method: null
+                    case_type: "bk"
+                    case_number_full: "2:2019bk20033"
+                    case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    joint_flag: "true"
+                    date_termed: null
+                    joint_dismissed_date: null
+                    court_id: "pawb"
+                    case_office: "2"
+                    disposition_method: null
+                    date_dismissed: null
+                    case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civil_stat_terminated: "State Court"
+                    date_reopened: null
+                    mdl_date_ordered: null
+                    civil_transferee: "2007-67448"
+                    civil_date_terminated: "2016-09-27"
+                    mdl_extension: "20033"
+                    civil_date_disposition: "2016-10-04"
+                    mdl_status: null
+                    civil_cto_number: "-500"
+                    civil_stat_disposition: "NTN"
+                    mdl_littype: null
+                    mdl_court_id: "paedce"
+                    mdl_transferee: null
+                    mdl_transferee_district: null
+                    civil_date_initiated: "2016-10-04"
+                    civil_stat_initiated: "XYZ Case"
+                    mdl_date_received: null
+                    jpml_number: "875"
+                    mdl_judge_last_name: null
+                    first_name: "GREGORY"
+                    generation: null
+                    last_name: "BUNITSKY"
+                    middle_name: "N."
+                    party_role: "aty"
+                    party_type: "aty"
+                    disposition: null
+                  raw_ordered_data:
+                    caseNumber: "4960"
+                    bankruptcyChapter: null
+                    jointDischargedDate: null
+                    caseId: "383811"
+                    dateFiled: "2019-01-04"
+                    caseYear: "2019"
+                    natureOfSuit: null
+                    dateDischarged: null
+                    jointDispositionMethod: null
+                    caseType: "bk"
+                    caseNumberFull: "2:2019bk20033"
+                    caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    jointBankruptcyFlag: "true"
+                    dateTermed: null
+                    jointDismissedDate: null
+                    courtId: "pawb"
+                    caseOffice: "2"
+                    dispositionMethod: null
+                    dateDismissed: null
+                    caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civilStatTerminated: "State Court"
+                    dateReopened: null
+                    mdlDateOrdered: null
+                    civilTransferee: "2007-67448"
+                    civilDateTerminated: "2016-09-27"
+                    mdlExtension: "20033"
+                    civilDateDisposition: "2016-10-04"
+                    mdlStatus: null
+                    civilCtoNumber: "-500"
+                    civilStatDisposition: "NTN"
+                    mdlLittype: null
+                    mdlCourtId: "paedce"
+                    mdlTransferee: null
+                    mdlTransfereeDistrict: null
+                    civilDateInitiated: "2016-10-04"
+                    civilStatInitiated: "XYZ Case"
+                    mdlDateReceived: null
+                    jpmlNumber: "875"
+                    mdlJudgeLastName: null
+                    firstName: "GREGORY"
+                    generation: null
+                    lastName: "BUNITSKY"
+                    middleName: "N."
+                    partyRole: "aty"
+                    partyType: "aty"
+                    disposition: null
             - case_number: '2:19-BK-20044'
               case_name: 'Mark C. Glen and Nicole A. Jacobs'
               filing_date: '2019-01-04 00:00:00'
@@ -2976,22 +2700,24 @@ components:
                 name: 'Chapter 13'
                 id: 12
                 legacy_id: 123
-              case_type_subcategory:
-                name: 'Bankruptcy'
-                id: 14
-                legacy_id: 2
-              case_type_category:
-                name: 'Civil'
-                id: 42
-                legacy_id: 26
+                source_name: 'CHAPTER 13'
+                subcategory:
+                  name: 'Bankruptcy'
+                  id: 14
+                  legacy_id: 2
+                category:
+                  name: 'Civil'
+                  id: 42
+                  legacy_id: 26
               case_status:
                 name: 'Other Pending'
                 id: 14
                 legacy_id: 13
-              case_status_category:
-                name: 'Pending'
-                id: 2
-                legacy_id: 2
+                source_name: 'PENDING'
+                category:
+                  name: 'Pending'
+                  id: 2
+                  legacy_id: 2
               courthouse:
                 name: 'Pennsylvania Western Bankruptcy'
                 id: 224
@@ -3000,403 +2726,111 @@ components:
                 name: 'U.S. Bankruptcy Courts'
                 id: 102
                 legacy_id: 54
+                source_name: 'PAWBKE'
               county: null
               state: 'PA'
               case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0911"
-              source_data:
-                common:
-                  case_type: 'CHAPTER 13'
-                  case_status: 'PENDING'
-                  courthouse: 'PAWBKE'
-                pages:
-                  PACER_CASE_LOCATOR_RESULTS:
-                    last_fetch: '2020-04-25 10:42:46'
-                    first_fetch: '2019-05-08 10:17:56'
-                    extracted_fields::
-                      case_number: "4960"
-                      chapter: null
-                      joint_discharged_date: null
-                      pacer_case_id: "383811"
-                      date_filed: "2019-01-04"
-                      case_year: "2019"
-                      nature_of_suit: null
-                      date_discharged: null
-                      joint_disposition_method: null
-                      case_type: "bk"
-                      case_number_full: "2:2019bk20043"
-                      case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      joint_flag: "true"
-                      date_termed: null
-                      joint_dismissed_date: null
-                      court_id: "pawb"
-                      case_office: "2"
-                      disposition_method: null
-                      date_dismissed: null
-                      case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383821"
-                      civil_stat_terminated: "State Court"
-                      date_reopened: null
-                      mdl_date_ordered: null
-                      civil_transferee: "2007-67448"
-                      civil_date_terminated: "2016-09-27"
-                      mdl_extension: "20033"
-                      civil_date_disposition: "2016-10-04"
-                      mdl_status: null
-                      civil_cto_number: "-500"
-                      civil_stat_disposition: "NTN"
-                      mdl_littype: null
-                      mdl_court_id: "paedce"
-                      mdl_transferee: null
-                      mdl_transferee_district: null
-                      civil_date_initiated: "2016-10-04"
-                      civil_stat_initiated: "XYZ Case"
-                      mdl_date_received: null
-                      jpml_number: "875"
-                      mdl_judge_last_name: null
-                      first_name: "GREGORY"
-                      generation: null
-                      last_name: "BUNITSKY"
-                      middle_name: "N."
-                      party_role: "aty"
-                      party_type: "aty"
-                      disposition: null
-                    raw_ordered_data:
-                      caseNumber: "4960"
-                      bankruptcyChapter: null
-                      jointDischargedDate: null
-                      caseId: "383811"
-                      dateFiled: "2019-01-04"
-                      caseYear: "2019"
-                      natureOfSuit: null
-                      dateDischarged: null
-                      jointDispositionMethod: null
-                      caseType: "bk"
-                      caseNumberFull: "2:2019bk20033"
-                      caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      jointBankruptcyFlag: "true"
-                      dateTermed: null
-                      jointDismissedDate: null
-                      courtId: "pawb"
-                      caseOffice: "2"
-                      dispositionMethod: null
-                      dateDismissed: null
-                      caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civilStatTerminated: "State Court"
-                      dateReopened: null
-                      mdlDateOrdered: null
-                      civilTransferee: "2007-67448"
-                      civilDateTerminated: "2016-09-27"
-                      mdlExtension: "20033"
-                      civilDateDisposition: "2016-10-04"
-                      mdlStatus: null
-                      civilCtoNumber: "-500"
-                      civilStatDisposition: "NTN"
-                      mdlLittype: null
-                      mdlCourtId: "paedce"
-                      mdlTransferee: null
-                      mdlTransfereeDistrict: null
-                      civilDateInitiated: "2016-10-04"
-                      civilStatInitiated: "XYZ Case"
-                      mdlDateReceived: null
-                      jpmlNumber: "875"
-                      mdlJudgeLastName: null
-                      firstName: "GREGORY"
-                      generation: null
-                      lastName: "BUNITSKY"
-                      middleName: "N."
-                      partyRole: "aty"
-                      partyType: "aty"
-                      disposition: null
-    SuccessResultPostSearchAPIResponse:
-      value:
-        status: "SUCCESS"
-        error: ""
-        message: ""
-        data:
-          job_id: "ABKDE200702060605"
-          pacer_search_type: "PACER_SEARCH_CASE"
-          page_number: 1
-          more_results: true
-          results:
-            - case_number: '2:19-BK-20033'
-              case_name: 'Mark C. Bonomi and Nicole A. Bonomi'
-              filing_date: '2019-01-04 00:00:00'
-              case_last_fetch: '2020-05-08 10:17:56'
-              case_last_updates_found: '2020-04-25 10:42:46'
-              participants_last_fetch: '2020-04-25 10:42:46'
-              case_type:
-                name: 'Chapter 13'
-                id: 12
-                legacy_id: 123
-              case_type_subcategory:
-                name: 'Bankruptcy'
-                id: 14
-                legacy_id: 2
-              case_type_category:
-                name: 'Civil'
-                id: 42
-                legacy_id: 26
-              case_status:
-                name: 'Other Pending'
-                id: 14
-                legacy_id: 13
-              case_status_category:
-                name: 'Pending'
-                id: 2
-                legacy_id: 2
-              courthouse:
-                name: 'Pennsylvania Western Bankruptcy'
-                id: 224
-                legacy_id: 125
-              jurisdiction:
-                name: 'U.S. Bankruptcy Courts'
-                id: 102
-                legacy_id: 54
-              county: null
-              state: 'PA'
-              case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-              source_data:
-                common:
-                  case_type: 'CHAPTER 13'
-                  case_status: 'PENDING'
-                  courthouse: 'PAWBKE'
-                pages:
-                  PACER_CASE_LOCATOR_RESULTS:
-                    last_fetch: '2020-04-25 10:42:46'
-                    first_fetch: '2019-05-08 10:17:56'
-                    extracted_fields::
-                      case_number: "4960"
-                      chapter: null
-                      joint_discharged_date: null
-                      pacer_case_id: "383811"
-                      date_filed: "2019-01-04"
-                      case_year: "2019"
-                      nature_of_suit: null
-                      date_discharged: null
-                      joint_disposition_method: null
-                      case_type: "bk"
-                      case_number_full: "2:2019bk20033"
-                      case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      joint_flag: "true"
-                      date_termed: null
-                      joint_dismissed_date: null
-                      court_id: "pawb"
-                      case_office: "2"
-                      disposition_method: null
-                      date_dismissed: null
-                      case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civil_stat_terminated: "State Court"
-                      date_reopened: null
-                      mdl_date_ordered: null
-                      civil_transferee: "2007-67448"
-                      civil_date_terminated: "2016-09-27"
-                      mdl_extension: "20033"
-                      civil_date_disposition: "2016-10-04"
-                      mdl_status: null
-                      civil_cto_number: "-500"
-                      civil_stat_disposition: "NTN"
-                      mdl_littype: null
-                      mdl_court_id: "paedce"
-                      mdl_transferee: null
-                      mdl_transferee_district: null
-                      civil_date_initiated: "2016-10-04"
-                      civil_stat_initiated: "XYZ Case"
-                      mdl_date_received: null
-                      jpml_number: "875"
-                      mdl_judge_last_name: null
-                      first_name: "GREGORY"
-                      generation: null
-                      last_name: "BUNITSKY"
-                      middle_name: "N."
-                      party_role: "aty"
-                      party_type: "aty"
-                      disposition: null
-                    raw_ordered_data:
-                      caseNumber: "4960"
-                      bankruptcyChapter: null
-                      jointDischargedDate: null
-                      caseId: "383811"
-                      dateFiled: "2019-01-04"
-                      caseYear: "2019"
-                      natureOfSuit: null
-                      dateDischarged: null
-                      jointDispositionMethod: null
-                      caseType: "bk"
-                      caseNumberFull: "2:2019bk20033"
-                      caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      jointBankruptcyFlag: "true"
-                      dateTermed: null
-                      jointDismissedDate: null
-                      courtId: "pawb"
-                      caseOffice: "2"
-                      dispositionMethod: null
-                      dateDismissed: null
-                      caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civilStatTerminated: "State Court"
-                      dateReopened: null
-                      mdlDateOrdered: null
-                      civilTransferee: "2007-67448"
-                      civilDateTerminated: "2016-09-27"
-                      mdlExtension: "20033"
-                      civilDateDisposition: "2016-10-04"
-                      mdlStatus: null
-                      civilCtoNumber: "-500"
-                      civilStatDisposition: "NTN"
-                      mdlLittype: null
-                      mdlCourtId: "paedce"
-                      mdlTransferee: null
-                      mdlTransfereeDistrict: null
-                      civilDateInitiated: "2016-10-04"
-                      civilStatInitiated: "XYZ Case"
-                      mdlDateReceived: null
-                      jpmlNumber: "875"
-                      mdlJudgeLastName: null
-                      firstName: "GREGORY"
-                      generation: null
-                      lastName: "BUNITSKY"
-                      middleName: "N."
-                      partyRole: "aty"
-                      partyType: "aty"
-                      disposition: null
-            - case_number: '2:19-BK-20044'
-              case_name: 'Mark C. Glen and Nicole A. Jacobs'
-              filing_date: '2019-01-04 00:00:00'
-              case_last_fetch: '2020-05-08 10:17:56'
-              case_last_updates_found: '2020-04-25 10:42:46'
-              participants_last_fetch: '2020-04-25 10:42:46'
-              case_type:
-                name: 'Chapter 13'
-                id: 12
-                legacy_id: 123
-              case_type_subcategory:
-                name: 'Bankruptcy'
-                id: 14
-                legacy_id: 2
-              case_type_category:
-                name: 'Civil'
-                id: 42
-                legacy_id: 26
-              case_status:
-                name: 'Other Pending'
-                id: 14
-                legacy_id: 13
-              case_status_category:
-                name: 'Pending'
-                id: 2
-                legacy_id: 2
-              courthouse:
-                name: 'Pennsylvania Western Bankruptcy'
-                id: 224
-                legacy_id: 125
-              jurisdiction:
-                name: 'U.S. Bankruptcy Courts'
-                id: 102
-                legacy_id: 54
-              county: null
-              state: 'PA'
-              case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0911"
-              source_data:
-                common:
-                  case_type: 'CHAPTER 13'
-                  case_status: 'PENDING'
-                  courthouse: 'PAWBKE'
-                pages:
-                  PACER_CASE_LOCATOR_RESULTS:
-                    last_fetch: '2020-04-25 10:42:46'
-                    first_fetch: '2019-05-08 10:17:56'
-                    extracted_fields::
-                      case_number: "4960"
-                      chapter: null
-                      joint_discharged_date: null
-                      pacer_case_id: "383811"
-                      date_filed: "2019-01-04"
-                      case_year: "2019"
-                      nature_of_suit: null
-                      date_discharged: null
-                      joint_disposition_method: null
-                      case_type: "bk"
-                      case_number_full: "2:2019bk20043"
-                      case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      joint_flag: "true"
-                      date_termed: null
-                      joint_dismissed_date: null
-                      court_id: "pawb"
-                      case_office: "2"
-                      disposition_method: null
-                      date_dismissed: null
-                      case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383821"
-                      civil_stat_terminated: "State Court"
-                      date_reopened: null
-                      mdl_date_ordered: null
-                      civil_transferee: "2007-67448"
-                      civil_date_terminated: "2016-09-27"
-                      mdl_extension: "20033"
-                      civil_date_disposition: "2016-10-04"
-                      mdl_status: null
-                      civil_cto_number: "-500"
-                      civil_stat_disposition: "NTN"
-                      mdl_littype: null
-                      mdl_court_id: "paedce"
-                      mdl_transferee: null
-                      mdl_transferee_district: null
-                      civil_date_initiated: "2016-10-04"
-                      civil_stat_initiated: "XYZ Case"
-                      mdl_date_received: null
-                      jpml_number: "875"
-                      mdl_judge_last_name: null
-                      first_name: "GREGORY"
-                      generation: null
-                      last_name: "BUNITSKY"
-                      middle_name: "N."
-                      party_role: "aty"
-                      party_type: "aty"
-                      disposition: null
-                    raw_ordered_data:
-                      caseNumber: "4960"
-                      bankruptcyChapter: null
-                      jointDischargedDate: null
-                      caseId: "383811"
-                      dateFiled: "2019-01-04"
-                      caseYear: "2019"
-                      natureOfSuit: null
-                      dateDischarged: null
-                      jointDispositionMethod: null
-                      caseType: "bk"
-                      caseNumberFull: "2:2019bk20033"
-                      caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
-                      jointBankruptcyFlag: "true"
-                      dateTermed: null
-                      jointDismissedDate: null
-                      courtId: "pawb"
-                      caseOffice: "2"
-                      dispositionMethod: null
-                      dateDismissed: null
-                      caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
-                      civilStatTerminated: "State Court"
-                      dateReopened: null
-                      mdlDateOrdered: null
-                      civilTransferee: "2007-67448"
-                      civilDateTerminated: "2016-09-27"
-                      mdlExtension: "20033"
-                      civilDateDisposition: "2016-10-04"
-                      mdlStatus: null
-                      civilCtoNumber: "-500"
-                      civilStatDisposition: "NTN"
-                      mdlLittype: null
-                      mdlCourtId: "paedce"
-                      mdlTransferee: null
-                      mdlTransfereeDistrict: null
-                      civilDateInitiated: "2016-10-04"
-                      civilStatInitiated: "XYZ Case"
-                      mdlDateReceived: null
-                      jpmlNumber: "875"
-                      mdlJudgeLastName: null
-                      firstName: "GREGORY"
-                      generation: null
-                      lastName: "BUNITSKY"
-                      middleName: "N."
-                      partyRole: "aty"
-                      partyType: "aty"
-                      disposition: null
+              pages:
+                PACER_CASE_LOCATOR_RESULTS:
+                  last_fetch: '2020-04-25 10:42:46'
+                  first_fetch: '2019-05-08 10:17:56'
+                  extracted_fields::
+                    case_number: "4960"
+                    chapter: null
+                    joint_discharged_date: null
+                    pacer_case_id: "383811"
+                    date_filed: "2019-01-04"
+                    case_year: "2019"
+                    nature_of_suit: null
+                    date_discharged: null
+                    joint_disposition_method: null
+                    case_type: "bk"
+                    case_number_full: "2:2019bk20043"
+                    case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    joint_flag: "true"
+                    date_termed: null
+                    joint_dismissed_date: null
+                    court_id: "pawb"
+                    case_office: "2"
+                    disposition_method: null
+                    date_dismissed: null
+                    case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383821"
+                    civil_stat_terminated: "State Court"
+                    date_reopened: null
+                    mdl_date_ordered: null
+                    civil_transferee: "2007-67448"
+                    civil_date_terminated: "2016-09-27"
+                    mdl_extension: "20033"
+                    civil_date_disposition: "2016-10-04"
+                    mdl_status: null
+                    civil_cto_number: "-500"
+                    civil_stat_disposition: "NTN"
+                    mdl_littype: null
+                    mdl_court_id: "paedce"
+                    mdl_transferee: null
+                    mdl_transferee_district: null
+                    civil_date_initiated: "2016-10-04"
+                    civil_stat_initiated: "XYZ Case"
+                    mdl_date_received: null
+                    jpml_number: "875"
+                    mdl_judge_last_name: null
+                    first_name: "GREGORY"
+                    generation: null
+                    last_name: "BUNITSKY"
+                    middle_name: "N."
+                    party_role: "aty"
+                    party_type: "aty"
+                    disposition: null
+                  raw_ordered_data:
+                    caseNumber: "4960"
+                    bankruptcyChapter: null
+                    jointDischargedDate: null
+                    caseId: "383811"
+                    dateFiled: "2019-01-04"
+                    caseYear: "2019"
+                    natureOfSuit: null
+                    dateDischarged: null
+                    jointDispositionMethod: null
+                    caseType: "bk"
+                    caseNumberFull: "2:2019bk20033"
+                    caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    jointBankruptcyFlag: "true"
+                    dateTermed: null
+                    jointDismissedDate: null
+                    courtId: "pawb"
+                    caseOffice: "2"
+                    dispositionMethod: null
+                    dateDismissed: null
+                    caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civilStatTerminated: "State Court"
+                    dateReopened: null
+                    mdlDateOrdered: null
+                    civilTransferee: "2007-67448"
+                    civilDateTerminated: "2016-09-27"
+                    mdlExtension: "20033"
+                    civilDateDisposition: "2016-10-04"
+                    mdlStatus: null
+                    civilCtoNumber: "-500"
+                    civilStatDisposition: "NTN"
+                    mdlLittype: null
+                    mdlCourtId: "paedce"
+                    mdlTransferee: null
+                    mdlTransfereeDistrict: null
+                    civilDateInitiated: "2016-10-04"
+                    civilStatInitiated: "XYZ Case"
+                    mdlDateReceived: null
+                    jpmlNumber: "875"
+                    mdlJudgeLastName: null
+                    firstName: "GREGORY"
+                    generation: null
+                    lastName: "BUNITSKY"
+                    middleName: "N."
+                    partyRole: "aty"
+                    partyType: "aty"
+                    disposition: null
+          more_results:
+            link: "https://api.unicourt.com/rest/v2/pacer/get-search-results/ABKDE200702060605/?page_number=2"
+            total_pages: 97
     FailureApiTokenMissing:
       value:
         status: "FAILURE"
