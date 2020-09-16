@@ -1841,6 +1841,10 @@ components:
               type: string
               example: "ABKDE200702060605"
               description: Job ID for which the result is obtained.
+            pacer_search_type:
+              type: string
+              example: PACER_SEARCH_CASE
+              description: This field tells us for which type of PACER SEARCH is this result belongs to.
             results_found:
               type: integer
               example: 5208
@@ -2547,6 +2551,7 @@ components:
         message: ""
         data:
           job_id: "ABKDE200702060605"
+          pacer_search_type: "PACER_SEARCH_CASE"
           results_found: 5208
           results_extracted: 54
           pacer_cost: "$0.10"
