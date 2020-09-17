@@ -96,10 +96,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -293,10 +293,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -456,10 +456,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -605,10 +605,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -736,10 +736,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -952,10 +952,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success with Case Meta Inforamtion and PCL Search Results:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -1663,10 +1663,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessGetAPIResponse'
+                $ref: '#/components/schemas/SuccessAPIResponse'
               examples:
                 Success Search API Response:
-                  $ref: "#/components/examples/SuccessResultGetSearchAPIResponse"
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
         '400':
           description: Invalid Input Parameter
           content:
@@ -1819,7 +1819,7 @@ components:
         - "PR"
         - "MP"
         - "GU"
-    SuccessGetAPIResponse:
+    SuccessAPIResponse:
       type: object
       properties:
         status:
@@ -2544,7 +2544,7 @@ components:
       value:
         status: "SUCCESS"
         job_id: "ABKDE200702060605"
-    SuccessResultGetSearchAPIResponse:
+    SuccessResultSearchAPIResponse:
       value:
         status: "SUCCESS"
         error: ""
