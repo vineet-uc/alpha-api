@@ -833,62 +833,6 @@ paths:
                 Internal Server Error:
                   $ref: "#/components/examples/FailureInternalServerError"
 
-  /get-downloaded-document/{document_id}/:
-    get:
-      tags:
-        - Document Order and Download API's
-      operationId: Get Downloaded Document API
-      parameters:
-        - schema:
-            type: string
-            example: "DOC_FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-          in: path
-          name: document_id
-          description: "Document ID to Download"
-          required: true
-      security:
-        - api_key: []
-      responses:
-        '200':
-          description: The request is recieved.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessGetDownloadedDocumentAPIResponse'
-              examples:
-                Success - Download Document:
-                  $ref: "#/components/examples/DocumentDownloadApiResponse"
-        '400':
-          description: Invalid Input Parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailureInvalidInputParameter'
-              examples:
-                API Token Not Passed:
-                  $ref: "#/components/examples/FailureApiTokenMissing"
-                Document Id Not Passed:
-                  $ref: "#/components/examples/FailureDocumentIdNotPassed"
-
-        '401':
-          description: Unauthorized access
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailureUnauthorizedAccess'
-              examples:
-                Access Denied For Token:
-                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailureInternalServerError'
-              examples:
-                Internal Server Error:
-                  $ref: "#/components/examples/FailureInternalServerError"
-
 components:
   securitySchemes:
     api_key:
@@ -987,29 +931,6 @@ components:
               $ref: "#/components/schemas/MoreJudges"
             case_api_link:
               $ref: "#/components/schemas/CaseApiLink"
-
-    SuccessGetDownloadedDocumentAPIResponse:
-      type: object
-      properties:
-        document_download:
-          type: object
-          properties:
-            document_id:
-              type: string
-              example: "DOC-FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-              description: Requested Document ID.
-            date:
-              type: string
-              example: "2020-10-09 10:10"
-              description: The date when the document was requested to download.
-            expiry:
-              type: string
-              example: "2020-10-10 10:10"
-              description: The document download link will be expired at the given time.
-            link:
-              type: string
-              example: "https://case_docs.s3.amazonaws.com/pc/jpml/jpml/PACER_JPML_D_85011058237_1591619148.pdf?Signature=UpdJ9%2BJJJ4XyV252VKD0g2FE1I8%3D&Expires=1519114632&AWSAccessKeyId=ASIAIVIPKMBFROMOG4UA&x-amz-security-token=FQoDYXdzEBAaDAFHPFrD90ZiDDXztiK3A5quX27wV0JyJ/MEZZC72CPlfmLYNblJvE9oW4nObvf1H5p%2Boj9Qsg0NQJ36qKmsV2IVFNtmqkoXufMqjpdb1S/p4rp6VPPk6fweYsqkVkjhHkkLesIq8XDAxlKSE9i9TUO8RaKl90c3RszzKhJCjkmLdKEFuwoPv1W1EDyJHsZ222TSnkOJfEJYcaVRhvNPQjSXkl%2BhwrX3Ft0Pzns1rGDtNMj6/2iRoE%2Blqqi4/uFNKbRMxaPS4xi9a7JcevwHPQhj8bVEZyIkZ35vQ4g2WFpImt1uafHPSuzE3WglbkO4yP7mP62P6qIl9xpYpYqzFLdecAkcz0ipBIJltfegTvITfxFMzlYHZimkOx9uJIGXKpD//VSc%2BW95/8JgcAPbGAdCXaxLOVbb1XPSxlO46irUaXFUSBHDy0rKuXdirRiIs583HQt2K6MvMBPzB7BbbE998V1sQsezHvvazdESDSVrjBstXrP23laQg7IiK5rbtGxYYqSEKOlaUd3eFIJwnfqYPVp%2Bl%2BWwORnbi96BtziNUABuccd3KepVMvth481k/xf12Fnakl/vS5A9ArOT7BjwY7q783Mok5Kv1AU%3D"
-              description: S3Bucket link to the document which will expiry in the specified in the mentioned time.
 
     SuccessCaseAPIResponse:
       type: object
@@ -3449,14 +3370,6 @@ components:
             total_pages: 2
           case_api_link: "https://api.unicourt.com/rest/v2/case/FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
 
-    DocumentDownloadApiResponse:
-      value:
-        document_download:
-          document_id: "DOC-FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
-          date: "2020-10-09 10:10"
-          expiry: "2020-10-10 10:10"
-          link: "https://case_docs.s3.amazonaws.com/pc/jpml/jpml/PACER_JPML_D_85011058237_1591619148.pdf?Signature=UpdJ9%2BJJJ4XyV252VKD0g2FE1I8%3D&Expires=1519114632&AWSAccessKeyId=ASIAIVIPKMBFROMOG4UA&x-amz-security-token=FQoDYXdzEBAaDAFHPFrD90ZiDDXztiK3A5quX27wV0JyJ/MEZZC72CPlfmLYNblJvE9oW4nObvf1H5p%2Boj9Qsg0NQJ36qKmsV2IVFNtmqkoXufMqjpdb1S/p4rp6VPPk6fweYsqkVkjhHkkLesIq8XDAxlKSE9i9TUO8RaKl90c3RszzKhJCjkmLdKEFuwoPv1W1EDyJHsZ222TSnkOJfEJYcaVRhvNPQjSXkl%2BhwrX3Ft0Pzns1rGDtNMj6/2iRoE%2Blqqi4/uFNKbRMxaPS4xi9a7JcevwHPQhj8bVEZyIkZ35vQ4g2WFpImt1uafHPSuzE3WglbkO4yP7mP62P6qIl9xpYpYqzFLdecAkcz0ipBIJltfegTvITfxFMzlYHZimkOx9uJIGXKpD//VSc%2BW95/8JgcAPbGAdCXaxLOVbb1XPSxlO46irUaXFUSBHDy0rKuXdirRiIs583HQt2K6MvMBPzB7BbbE998V1sQsezHvvazdESDSVrjBstXrP23laQg7IiK5rbtGxYYqSEKOlaUd3eFIJwnfqYPVp%2Bl%2BWwORnbi96BtziNUABuccd3KepVMvth481k/xf12Fnakl/vS5A9ArOT7BjwY7q783Mok5Kv1AU%3D"
-
     PartiesApiResponse:
       value:
         court_case:
@@ -4504,11 +4417,6 @@ components:
         error:
           code: "INVALID_INPUT_PARAMETER"
           message: "Case ID is a mandatory field."
-    FailureDocumentIdNotPassed:
-      value:
-        error:
-          code: "INVALID_INPUT_PARAMETER"
-          message: "Document ID is a mandatory field."
     FailurePageNumberNotPassed:
       value:
         error:
