@@ -1,0 +1,2986 @@
+openapi: 3.0.0
+info:
+  title: PACER Search API's and Webhooks
+  description: "<b>PACER Search API's and Webhooks are divided into 2 groups:</b>\n\n\t 1. Get PACER Search API's\n\n\t 2. Bulk Data Download Webhooks\n\n\t 3. Get Search Results\n <b>1. Get PACER Search API's:</b>\n* These API's can be used when you would like to have PCL results for a respective page <b>(Note: To paginate to page numbers greater than 1 you will have to request with your search criteria first which will result in the 1st page of the PCL search)</b> . For each page results you will be charged $0.10 on request of that page. \n\n\t<b>Example Use Case:</b> Imagine you have a webapp where you would like to show certain data of your client then you could request this API and get the results. \n\n <b>2. Bulk Data Download Webhooks:</b>\n* These API's come in use when you need a bulk of data with certain amount <b>(Note: The maximum amount one can set is upto $10)</b> set for a search criteria your going to request. A webhook is sent back with the cost incurred for the search and number of records found in the search. To get all the results we have a separate paginated API for which you need to submit the job_id returned in the API response of a search made. \n\n\t<b>Example Use Case:</b> Imagine your doing a research on a particular type of case or a participant from the case for which you would like to have a set of bulk data then this Webhook would be useful for you.\n\n <b>3. Get Search Results:</b>\n* Providing the Job ID and Page Number this API returns the PCL Search Results. To get the PCL Search results atleast 1 request has to be made to the above mentioned above API's or Webhhooks to get the corresponding Job ID for the search made. \n\n\t<b>Example Use Case:</b> \n\n\t1) For Get PACER Search API's users once you have recieved a Job ID, to get the results from the 2nd page onwards you need to call this api with corresponding Job ID. \n\n\t2. Webhook users need to use this API to get their search results with the corresponding Job ID and Page Number."
+  version: '1.0'
+servers:
+  - url: 'https://api.unicourt.com'
+paths:
+  /pacer/search/appeal-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Search Appeal
+      parameters:
+        - schema:
+            type: string
+            example: 18-85468
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)"
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["Central District of California District","Northern District of California District"]'
+          in: query
+          name: court_regions
+          description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["101", "3333"]'
+          in: query
+          name: nature_of_suits
+          description: "Array of nature of suit with each nature of suit separated by comma. Add the nature of suit in the array to narrow down your search further for the given nature of suit.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Court Region.\n\n\tNote: Applicable only for Appellate and Civil Court types."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Nature Of Suit:
+                  $ref: "#/components/examples/FailureInvalidNatureOfSuit"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/bankruptcy-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Search Bankruptcy
+      parameters:
+        - schema:
+            type: string
+            example: 19-bk-20033
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)"
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["aty"]'
+          in: query
+          name: party_role
+          description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API."
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: integer
+            example: "5486"
+          in: query
+          name: four_digit_ssn
+          description: "The last four digits of the Social Security Number can be used in the search criteria. But when using this field Last Name or Entity Name field is mandatory."
+        - schema:
+            type: string
+            example: "682689785"
+          in: query
+          name: ssn_or_ein
+          description: "The 9 digit Social Security number or Federal Tax ID can be used in this search. The delimiter dash (-) can be used as the input to this API but wont be used during the search. A search for SSN 123-45-6789 or 12-3456789 will yield the same results as a search for 123456789."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["Central District of California District","Northern District of California District"]'
+          in: query
+          name: court_regions
+          description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '[07, 09]'
+          in: query
+          name: chapters
+          description: "Array of bankruptcy chapters with each chapter separated by comma. Add bankruptcy chapters in the array to narrow down your search further for the given chapters.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Bankruptcy Chapters.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_dismissed_start_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_dismissed_end_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_discharged_start_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_discharged_end_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Required Data Not Passed for Bankruptcy 4 digit SSN Search:
+                  $ref: "#/components/examples/FailureRequiredDataNotSentForBkSearch"
+                Invalid Four Digit SSN Format:
+                  $ref: "#/components/examples/FailureInvalidFourDigitSsn"
+                Invalid SSN OR EIN Format:
+                  $ref: "#/components/examples/FailureInvalidSsnOrEinFormat"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Chapters:
+                  $ref: "#/components/examples/FailureInvalidChapters"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/civil-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Search Civil
+      parameters:
+        - schema:
+            type: string
+            example: 19-cv-00328
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)"
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["aty"]'
+          in: query
+          name: party_role
+          description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API."
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["Central District of California District","Northern District of California District"]'
+          in: query
+          name: court_regions
+          description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["101", "3333"]'
+          in: query
+          name: nature_of_suits
+          description: "Array of nature of suit with each nature of suit separated by comma. Add the nature of suit in the array to narrow down your search further for the given nature of suit.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Court Region.\n\n\tNote: Applicable only for Appellate and Civil Court types."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Nature Of Suit:
+                  $ref: "#/components/examples/FailureInvalidNatureOfSuit"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/criminal-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Search Criminal
+      parameters:
+        - schema:
+            type: string
+            example: 19-cv-00328
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)"
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["aty"]'
+          in: query
+          name: party_role
+          description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API."
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["Central District of California District","Northern District of California District"]'
+          in: query
+          name: court_regions
+          description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/multidistrict-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Search MultiDistrict
+      parameters:
+        - schema:
+            type: string
+            example: MDL-875
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tnnnnn (MDL Cases Only without Prefix)
+                  \n\n\tFnnnnn (MDL Cases Only With F as Prefix)
+                  \n\nwhere:
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\n\tNOTE:  \n\n\t The MDL case number should be requested with only the seed number (ie: 875) or with the prefix F (ie: F12345). The digits can be 5 digits at the max."
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["aty"]'
+          in: query
+          name: party_role
+          description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API."
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Format For MDL Case Number:
+                  $ref: "#/components/examples/FailureInvalidFormatMdlCase"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/all-courts/:
+    get:
+      tags:
+        - Get PACER Search API's
+      operationId: PACER Case Search
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - All
+              - Appellate
+              - Bankruptcy
+              - Civil
+              - Criminal
+            example: Civil
+            default: All
+          required: true
+          in: query
+          name: court_type
+          description: Court Types of PACER.
+        - schema:
+            type: string
+            example: MDL-875
+          in: query
+          name: case_number
+          description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\n\tnnnnn (MDL Cases Only without Prefix)
+                  \n\n\tFnnnnn (MDL Cases Only With F as Prefix)
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)
+                  \n\n\tNOTE:  \n\n\t1.Case type and office values are ignored for Appellate case numbers.\n\n\t2.The MDL case number should be requested with only the seed number (ie: 875) or with the prefix F (ie: F12345). The digits can be 5 digits at the max."
+        - schema:
+            type: string
+            example: "Glen Matthews v."
+          in: query
+          name: case_title
+          description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+        - schema:
+            type: string
+            example: "Jacobs, Glen"
+          in: query
+          name: party_name
+          description: "Party Name can be a name of the Person or an Entity name. Party Name can should be passed in either of the formats for appropriate results\n\n\t 1. Last Name or Entity Name\n\n\t 2. Last, First Name\n\n\t 3. Last, First Middle Name"
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["aty"]'
+          in: query
+          name: party_role
+          description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API.\n\n\t* Party Codes are not applicable for Appellate Cases."
+        - schema:
+            type: boolean
+            example: True
+            default: True
+          in: query
+          name: party_exact_match
+          description: "Search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results."
+        - schema:
+            type: integer
+            example: "5486"
+          in: query
+          name: four_digit_ssn
+          description: "The last four digits of the Social Security Number can be used in the search criteria. But when using this field Last Name or Entity Name field is mandatory."
+        - schema:
+            type: string
+            example: "682689785"
+          in: query
+          name: ssn_or_ein
+          description: "The 9 digit Social Security number or Federal Tax ID can be used in this search. The delimiter dash (-) can be used as the input to this API but wont be used during the search. A search for SSN 123-45-6789 or 12-3456789 will yield the same results as a search for 123456789."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["Central District of California District","Northern District of California District"]'
+          in: query
+          name: court_regions
+          description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '["101", "3333"]'
+          in: query
+          name: nature_of_suits
+          description: "Array of nature of suit with each nature of suit separated by comma. Add the nature of suit in the array to narrow down your search further for the given nature of suit.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Court Region.\n\n\tNote: Applicable only for Appellate and Civil Court types."
+        - schema:
+            type: array
+            items:
+              type: string
+            example: '[07, 09]'
+          in: query
+          name: chapters
+          description: "Array of bankruptcy chapters with each chapter separated by comma. Add bankruptcy chapters in the array to narrow down your search further for the given chapters.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Bankruptcy Chapters.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-04'
+          in: query
+          name: case_filed_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_filed_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_terminated_start_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date.
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_terminated_end_date
+          description: Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date.
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_dismissed_start_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_dismissed_end_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            format: date
+            example: '2020-06-26'
+          in: query
+          name: case_discharged_start_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+        - schema:
+            type: string
+            example: '2020-06-27'
+            format: date
+          in: query
+          name: case_discharged_end_date
+          description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success with Case Meta Inforamtion and PCL Search Results:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Required Data Not Passed for Bankruptcy 4 digit SSN Search:
+                  $ref: "#/components/examples/FailureRequiredDataNotSentForBkSearch"
+                Invalid Four Digit SSN Format:
+                  $ref: "#/components/examples/FailureInvalidFourDigitSsn"
+                Invalid SSN OR EIN Format:
+                  $ref: "#/components/examples/FailureInvalidSsnOrEinFormat"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Nature Of Suit:
+                  $ref: "#/components/examples/FailureInvalidNatureOfSuit"
+                Invalid Chapters:
+                  $ref: "#/components/examples/FailureInvalidChapters"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                Invalid Region For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidRegionForMdlCase"
+                Invalid Case Type For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidCaseTypeForMdlCase"
+                Invalid Format For MDL Case Number:
+                  $ref: "#/components/examples/FailureInvalidFormatMdlCase"
+                Wrong Court type Selected For Chapters:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForChapters"
+                Wrong Court type Selected For Nature Of Suit:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForNatureOfSuit"
+                Bankruptcy Date Dismissed Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDismissedPassedForWrongCourtType"
+                Bankruptcy Date Discharged Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDischargedPassedForWrongCourtType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+  /pacer/search/case/:
+    post:
+      tags:
+        - PACER Search With Specific Search Type (Bulk Data Download)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                webhook_url:
+                  type: string
+                  format: uri
+                  description: Endpoint URL where you would like to post the search data results.
+                pacer_max_cost_exposure:
+                  type: string
+                  description: "PCL Search in PACER website gives us 54 results in each page and cost of a page is $0.10. The maximum results given by the PCL Search is 5400 (100 pages) which costs $10.\n\n\tNote: For all the scenarios Imagine that the pacer_max_cost_exposure sent in the request is $5.\n\n\tScenario 1: For the given search parameters the court site returns us 5400 results which is the maximum data it provides for a search. But since the pacer_max_cost_exposure is $5 we will navigate through 50 pages (5/0.1) which will fetch 2700 results (50 * 54 = 2700).\n\n\t Scenario 2: For the given search parameters the court site returned us 1350 results. Then the search result would cost you only $2.5 for 25 pages out of the given pacer_max_cost_exposure $5.\n\n\tScenario 3: For the given search parameters the court site did not returned any results but you would be still charged with $0.10 for the search made by the court."
+                court_type:
+                  type: string
+                  description: Court Types of PACER.
+                  enum:
+                    - All
+                    - Appellate
+                    - Bankruptcy
+                    - Civil
+                    - Criminal
+                    - Multidistrict
+                case_number:
+                  type: string
+                  description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\n\tnnnnn (MDL Cases Only without Prefix)
+                  \n\n\tFnnnnn (MDL Cases Only With F as Prefix)
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)
+                  \n\n\tNOTE:  \n\n\t1.Case type and office values are ignored for Appellate case numbers.\n\n\t2.The MDL case number should be requested with only the seed number (ie: 875) or with the prefix F (ie: F12345). The digits can be 5 digits at the max."
+                case_title:
+                  type: string
+                  description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+                case_types:
+                  type: array
+                  items:
+                    properties:
+                      each_case_type:
+                        type: string
+                  description: "Array of case types with each case type separated by comma. You can mention the case types which you would like to do the search for. By default it will search in all the case types available for the respective court.\n\nPlease use this link to find all the case types available from all the courts - [Need a separate UniCourt Link] APPENDIX FOR Case Type."
+                court_regions:
+                  type: array
+                  items:
+                    properties:
+                      each_court_region:
+                        type: string
+                  description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+                nature_of_suits:
+                  type: array
+                  items:
+                    properties:
+                      each_nature_of_suit:
+                        type: string
+                  description: "Array of nature of suit with each nature of suit separated by comma. Add the nature of suit in the array to narrow down your search further for the given nature of suit.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Court Region.\n\n\tNote: Applicable only for Appellate and Civil Court types."
+                chapters:
+                  type: array
+                  items:
+                    properties:
+                      each_chapter:
+                        type: string
+                  description: "Array of bankruptcy chapters with each chapter separated by comma. Add bankruptcy chapters in the array to narrow down your search further for the given chapters.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Bankruptcy Chapters.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_filed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date."
+                case_filed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date."
+                case_terminated_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date."
+                case_terminated_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date."
+                case_dismissed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_dismissed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+              required:
+                - webhook_url
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessBulkDataAPIResponse'
+              examples:
+                Success API Response:
+                  $ref: "#/components/examples/SuccessBulkDataAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Required Data Not Passed:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Nature Of Suit:
+                  $ref: "#/components/examples/FailureInvalidNatureOfSuit"
+                Invalid Chapters:
+                  $ref: "#/components/examples/FailureInvalidChapters"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                Invalid Region For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidRegionForMdlCase"
+                Invalid Case Type For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidCaseTypeForMdlCase"
+                Invalid Format For MDL Case Number:
+                  $ref: "#/components/examples/FailureInvalidFormatMdlCase"
+                Wrong Court type Selected For Chapters:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForChapters"
+                Wrong Court type Selected For Nature Of Suit:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForNatureOfSuit"
+                Bankruptcy Date Dismissed Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDismissedPassedForWrongCourtType"
+                Bankruptcy Date Discharged Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDischargedPassedForWrongCourtType"
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+      callbacks:
+        PACER Case Search Completion Webhook:
+          '$request.body#/webhook_url':
+            post:
+              requestBody:
+                description: The response of PACER Case Search API will be posted to your webhook url which was provided during the reuqest of this API.
+                content:
+                  application/x-www-form-urlencoded:
+                    schema:
+                      $ref: '#/components/schemas/PacerSearchCallbackRequest'
+              responses:
+                '200':
+                  description: "Response Data for PACER Case Search API request."
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/PacerSearchCallbackResponse"
+                      examples:
+                        PACER Search CallBack Response:
+                          $ref: "#/components/examples/SuccessCallBackResponse"
+
+  /pacer/search/party/:
+    post:
+      tags:
+        - PACER Search With Specific Search Type (Bulk Data Download)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                webhook_url:
+                  type: string
+                  format: uri
+                  description: Endpoint URL where you would like to post the search data results.
+                pacer_max_cost_exposure:
+                  type: string
+                  description: "PCL Search in PACER website gives us 54 results in each page and cost of a page is $0.10. The maximum results given by the PCL Search is 5400 (100 pages) which costs $10.\n\n\tNote: For all the scenarios Imagine that the pacer_max_cost_exposure sent in the request is $5.\n\n\tScenario 1: For the given search parameters the court site returns us 5400 results which is the maximum data it provides for a search. But since the pacer_max_cost_exposure is $5 we will navigate through 50 pages (5/0.1) which will fetch 2700 results (50 * 54 = 2700).\n\n\t Scenario 2: For the given search parameters the court site returned us 1350 results. Then the search result would cost you only $2.5 for 25 pages out of the given pacer_max_cost_exposure $5.\n\n\tScenario 3: For the given search parameters the court site did not returned any results but you would be still charged with $0.10 for the search made by the court."
+                party_last_name_or_entity_name:
+                  type: string
+                  description: The Last name of a Person or the name of an Entity.
+                party_first_name:
+                  type: string
+                  description: "The First name of a Person.\n\n\tNOTE: To use this option as your search parameter, you should also enter a last name or entity name."
+                party_middle_name:
+                  type: string
+                  description: "The Middle name of a Person.\n\n\tNOTE: To use this option as your search parameter, you should also enter a last name or entity name."
+                exact_matches_only:
+                  type: boolean
+                  description: By default this value will be set as True, which means the search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results.
+                party_role:
+                  type: string
+                  description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API.\n\n\t* Party Codes are not applicable for Appellate Cases."
+                court_type:
+                  type: string
+                  description: Court Types of PACER.
+                  enum:
+                    - All
+                    - Appellate
+                    - Bankruptcy
+                    - Civil
+                    - Criminal
+                    - Multidistrict
+                case_number:
+                  type: string
+                  description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\n\tnnnnn (MDL Cases Only without Prefix)
+                  \n\n\tFnnnnn (MDL Cases Only With F as Prefix)
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)
+                  \n\n\tNOTE:  \n\n\t1.Case type and office values are ignored for Appellate case numbers.\n\n\t2.The MDL case number should be requested with only the seed number (ie: 875) or with the prefix F (ie: F12345). The digits can be 5 digits at the max."
+                case_title:
+                  type: string
+                  description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+                case_types:
+                  type: array
+                  items:
+                    properties:
+                      each_case_type:
+                        type: string
+                  description: "Array of case types with each case type separated by comma. You can mention the case types which you would like to do the search for. By default it will search in all the case types available for the respective court.\n\nPlease use this link to find all the case types available from all the courts - [Need a separate UniCourt Link] APPENDIX FOR Case Type."
+                court_regions:
+                  type: array
+                  items:
+                    properties:
+                      each_court_region:
+                        type: string
+                  description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+                nature_of_suits:
+                  type: array
+                  items:
+                    properties:
+                      each_nature_of_suit:
+                        type: string
+                  description: "Array of nature of suit with each nature of suit separated by comma. Add the nature of suit in the array to narrow down your search further for the given nature of suit.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Court Region.\n\n\tNote: Applicable only for Appellate and Civil Court types."
+                chapters:
+                  type: array
+                  items:
+                    properties:
+                      each_chapter:
+                        type: string
+                  description: "Array of bankruptcy chapters with each chapter separated by comma. Add bankruptcy chapters in the array to narrow down your search further for the given chapters.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Bankruptcy Chapters.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_filed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date."
+                case_filed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date."
+                case_terminated_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date."
+                case_terminated_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date."
+                case_dismissed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_dismissed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+              required:
+                - webhook_url
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessBulkDataAPIResponse'
+              examples:
+                Success API Response:
+                  $ref: "#/components/examples/SuccessBulkDataAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Required Data Not Passed for Party Search:
+                  $ref: "#/components/examples/FailureRequiredDataNotSent"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Region For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidRegionForMdlCase"
+                Invalid Case Type For MDL Case:
+                  $ref: "#/components/examples/FailureInvalidCaseTypeForMdlCase"
+                Invalid Format For MDL Case Number:
+                  $ref: "#/components/examples/FailureInvalidFormatMdlCase"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Nature Of Suit:
+                  $ref: "#/components/examples/FailureInvalidNatureOfSuit"
+                Invalid Chapters:
+                  $ref: "#/components/examples/FailureInvalidChapters"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                Wrong Court type Selected For Chapters:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForChapters"
+                Wrong Court type Selected For Nature Of Suit:
+                  $ref: "#/components/examples/FailureWrongCourtSelectedForNatureOfSuit"
+                Bankruptcy Date Dismissed Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDismissedPassedForWrongCourtType"
+                Bankruptcy Date Discharged Passed For Wrong Court Type:
+                  $ref: "#/components/examples/FailureBankruptcyDateDischargedPassedForWrongCourtType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+      callbacks:
+        PACER Party Search Completion Webhook:
+          '$request.body#/webhook_url':
+            post:
+              requestBody:
+                description: The response of PACER Case Search API will be posted to your webhook url which was provided during the reuqest of this API.
+                content:
+                  application/x-www-form-urlencoded:
+                    schema:
+                      $ref: '#/components/schemas/PacerSearchCallbackRequest'
+              responses:
+                '200':
+                  description: "Your server returns this status code if it accepts the callback"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/PacerSearchCallbackResponse"
+                      examples:
+                        CallBack Success Response:
+                          $ref: "#/components/examples/SuccessCallBackResponse"
+  /pacer/search/bk-ssn-ein/:
+    post:
+      tags:
+        - PACER Search With Specific Search Type (Bulk Data Download)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                webhook_url:
+                  type: string
+                  format: uri
+                  description: Endpoint URL where you would like to post the search data results.
+                pacer_max_cost_exposure:
+                  type: string
+                  description: "PCL Search in PACER website gives us 54 results in each page and cost of a page is $0.10. The maximum results given by the PCL Search is 5400 (100 pages) which costs $10.\n\n\tNote: For all the scenarios Imagine that the pacer_max_cost_exposure sent in the request is $5.\n\n\tScenario 1: For the given search parameters the court site returns us 5400 results which is the maximum data it provides for a search. But since the pacer_max_cost_exposure is $5 we will navigate through 50 pages (5/0.1) which will fetch 2700 results (50 * 54 = 2700).\n\n\t Scenario 2: For the given search parameters the court site returned us 1350 results. Then the search result would cost you only $2.5 for 25 pages out of the given pacer_max_cost_exposure $5.\n\n\tScenario 3: For the given search parameters the court site did not returned any results but you would be still charged with $0.10 for the search made by the court."
+                party_last_name_or_entity_name:
+                  type: string
+                  description: The Last name of a Person or the name of an Entity.
+                party_first_name:
+                  type: string
+                  description: "The First name of a Person.\n\n\tNOTE: To use this option as your search parameter, you should also enter a last name or entity name."
+                party_middle_name:
+                  type: string
+                  description: "The Middle name of a Person.\n\n\tNOTE: To use this option as your search parameter, you should also enter a last name or entity name."
+                exact_matches_only:
+                  type: boolean
+                  description: By default this value will be set as True, which means the search will be made on the exact match of the party names. If the parameter is set to False then any parties whose name starts with the given party name will be fetched in the results.
+                party_role:
+                  type: string
+                  description: "Array of party codes with each party code separated by comma. Add the party codes in the array to narrow down your search further for the given party codes.\n\nPlease use this link to find all the Party Codes available - [Need a separate UniCourt Link] APPENDIX FOR Party Codes .\n\n\tNOTE:\n\n\t* Party Codes can vary from court to court. Use party codes only if you know the exact party code used in the court regions which you will provide during requesting this API.\n\n\t* Party Codes are not applicable for Appellate Cases."
+                four_digit_ssn:
+                  type: integer
+                  description: "The last four digits of the Social Security Number can be used in the search criteria. But when using this field Last Name or Entity Name field is mandatory."
+                ssn_or_ein:
+                  type: string
+                  description: "The 9 digit Social Security number or Federal Tax ID can be used in this search. The delimiter dash (-) can be used as the input to this API but wont be used during the search. A search for SSN 123-45-6789 or 12-3456789 will yield the same results as a search for 123456789."
+                case_number:
+                  type: string
+                  description: "If the court type is selected as All or if you need data for a specific case number format, then you need to use this option. Case numbers may be entered in each of the following formats:
+                  \n\n\tyy-nnnnn
+                  \n\n\tyy-tp-nnnnn
+                  \n\n\tyy tp nnnnn
+                  \n\n\tyytpnnnnn
+                  \n\n\to:yy-nnnnn
+                  \n\n\to:yy-tp-nnnnn
+                  \n\n\to:yy tp nnnnn
+                  \n\n\to:yytpnnnnn
+                  \n\nwhere:
+                  \n\nyy  case year (may be 2 or 4 digits)
+                  \n\nnnnn  case number (up to 5 digits)
+                  \n\ntp  case type (up to 2 characters)
+                  \n\no  office where the case was filed (1 digit)"
+                case_title:
+                  type: string
+                  description: "You can search using the case name even if you know one party.
+                  \n\n\tExamples:
+                  \n\n\tA search for case title john doe v will result in all cases with the case title John Doe v.
+                  \n\n\tA search for case title Acme, Inc. will result in all case titles starting with Acme, Inc."
+                case_types:
+                  type: array
+                  items:
+                    properties:
+                      each_case_type:
+                        type: string
+                  description: "Array of case types with each case type separated by comma. You can mention the case types which you would like to do the search for. By default it will search in all the case types available for the respective court.\n\nPlease use this link to find all the case types available from all the courts - [Need a separate UniCourt Link] APPENDIX FOR Case Type."
+                court_regions:
+                  type: array
+                  items:
+                    properties:
+                      each_court_region:
+                        type: string
+                  description: "Array of court region with each court region separated by comma. Add the court regions in the array to narrow down your search further for the given court region.\n\nPlease use this link to find all the Court Regions available - [Need a separate UniCourt Link] APPENDIX FOR Court Region."
+                chapters:
+                  type: array
+                  items:
+                    properties:
+                      each_chapter:
+                        type: string
+                  description: "Array of bankruptcy chapters with each chapter separated by comma. Add bankruptcy chapters in the array to narrow down your search further for the given chapters.\n\nPlease use this link to find all the Nature of Suits available - [Need a separate UniCourt Link] APPENDIX FOR Bankruptcy Chapters.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_filed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed start date on or after the given date."
+                case_filed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case filed end date on or before the given date."
+                case_terminated_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated start date on or after the given date."
+                case_terminated_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search by limiting the cases which matches the criteria for case terminated end date on or before the given date."
+                case_dismissed_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_dismissed_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case dismissed end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_start_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged start date on or after the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+                case_discharged_end_date:
+                  type: string
+                  format: date
+                  description: "Narrowing the search for bankruptcy cases by limiting the cases which matches the criteria for case discharged end date on or before the given date.\n\n\tNote: Applicable only for Bankruptcy Court type."
+              required:
+                - webhook_url
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessBulkDataAPIResponse'
+              examples:
+                Success API Response:
+                  $ref: "#/components/examples/SuccessBulkDataAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Required Data Not Passed for Bankruptcy SSN or EIN Search:
+                  $ref: "#/components/examples/FailureRequiredDataNotSentForBkSearch"
+                Invalid Case Number Format:
+                  $ref: "#/components/examples/FailureInvalidCaseNumber"
+                Invalid Court Region:
+                  $ref: "#/components/examples/FailureInvalidCourtRegion"
+                Invalid Four Digit SSN Format:
+                  $ref: "#/components/examples/FailureInvalidFourDigitSsn"
+                Invalid SSN OR EIN Format:
+                  $ref: "#/components/examples/FailureInvalidSsnOrEinFormat"
+                Invalid Chapters:
+                  $ref: "#/components/examples/FailureInvalidChapters"
+                Invalid Case Type:
+                  $ref: "#/components/examples/FailureInvalidCaseType"
+                First Name Or Middle Name Added Without Last Name Or Entity Name:
+                  $ref: "#/components/examples/FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+      callbacks:
+        PACER Bankruptcy by SSN/EIN Search Completion Webhook:
+          '$request.body#/webhook_url':
+            post:
+              requestBody:
+                description: The response of PACER Case Search API will be posted to your webhook url which was provided during the reuqest of this API.
+                content:
+                  application/x-www-form-urlencoded:
+                    schema:
+                      $ref: '#/components/schemas/PacerSearchCallbackRequest'
+              responses:
+                '200':
+                  description: "Your server returns this status code if it accepts the callback"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/PacerSearchCallbackResponse"
+                      examples:
+                        CallBack Success Response:
+                          $ref: "#/components/examples/SuccessCallBackResponse"
+  /pacer/get-search-results/{job_id}/:
+    get:
+      tags:
+        - Get Search Results
+      parameters:
+        - name: job_id
+          in: path
+          description: Unique Job Id which was given as a response to any of the PACER Search API's.
+          required: true
+          schema:
+            type: string
+          example: "ABKDE200702060605"
+        - name: page_number
+          in: query
+          description: "The page for which the result should be retrieved, starts with 1 and maximum page numbers is 54 since PCL search gives maximum 5400 results for a search. Each page consists of 100 results."
+          required: true
+          schema:
+            type: integer
+            maximum: 54
+          example: 1
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: The request is recieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAPIResponse'
+              examples:
+                Success Search API Response:
+                  $ref: "#/components/examples/SuccessResultSearchAPIResponse"
+        '400':
+          description: Invalid Input Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInvalidInputParameter'
+              examples:
+                API Token Not Passed:
+                  $ref: "#/components/examples/FailureApiTokenMissing"
+                Job Id Not Passed:
+                  $ref: "#/components/examples/FailureJobIdNotPassed"
+                Page Number Not Passed:
+                  $ref: "#/components/examples/FailurePageNumberNotPassed"
+                Invalid Page Number:
+                  $ref: "#/components/examples/FailureInvalidPageNumber"
+                Exceeded Page Number Request:
+                  $ref: "#/components/examples/FailureExceededPageNumber"
+
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureUnauthorizedAccess'
+              examples:
+                Access Denied For Token:
+                  $ref: "#/components/examples/FailureAccessDeniedFortoken"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureInternalServerError'
+              examples:
+                Internal Server Error:
+                  $ref: "#/components/examples/FailureInternalServerError"
+components:
+  securitySchemes:
+    api_key:
+      name: api_key
+      type: apiKey
+      in: header
+  schemas:
+    SuccessBulkDataAPIResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        job_id:
+          type: string
+          example: ABKDE200702060605
+    PacerSearchCallbackRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Response type of the request whether it is SUCCESS or Failure.
+          example: SUCCESS
+        pacer_search_type:
+          type: string
+          description: This field tells us for which type of PACER SEARCH is this result belongs to.
+          example: 'PACER_SEARCH_CASE'
+        pacer_max_cost_exposure:
+          type: string
+          description: PACER MAX COST EXPOSURE value set in the request of the PACER SEARCH API.
+          example: '$5'
+        results_found:
+          type: integer
+          description: Number of results PCL reported to match the search criteria.
+          example: 2700
+        results_extracted:
+          type: integer
+          description: Number of results extracted from PCL based on the pacer_max_cost_exposure.
+          example: 2646
+        job_id:
+          type: string
+          description: Job ID which was sent in the request of the search API's for a particular requested PACER Search.
+          example: 'ABKDE200702060605'
+        pacer_cost:
+          type: string
+          description: PACER cost occurred for the PACER search request considering the pacer_max_cost_exposure.
+          example: '$4.9'
+    PacerSearchCallbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Response type of the request whether it is SUCCESS or Failure.
+          example: SUCCESS
+        message:
+          type: string
+          description: Message if the data is posted successfully to the given CallBack URL.
+          example: 'Data posted to endpoint successfully'
+    PacerSearchResponseStates:
+      type: string
+      maxLength: 2
+      enum:
+        - "AL"
+        - "AK"
+        - "AZ"
+        - "AR"
+        - "CA"
+        - "CO"
+        - "CT"
+        - "DE"
+        - "FL"
+        - "GA"
+        - "HI"
+        - "ID"
+        - "IL"
+        - "IN"
+        - "IA"
+        - "KS"
+        - "KY"
+        - "LA"
+        - "ME"
+        - "MD"
+        - "MA"
+        - "MI"
+        - "MN"
+        - "MS"
+        - "MO"
+        - "MT"
+        - "NE"
+        - "NV"
+        - "NH"
+        - "NJ"
+        - "NM"
+        - "NY"
+        - "NC"
+        - "ND"
+        - "OH"
+        - "OK"
+        - "OR"
+        - "PA"
+        - "RI"
+        - "SC"
+        - "SD"
+        - "TN"
+        - "TX"
+        - "UT"
+        - "VT"
+        - "VA"
+        - "WA"
+        - "DC"
+        - "WV"
+        - "WI"
+        - "WY"
+        - "PR"
+        - "MP"
+        - "GU"
+    SuccessAPIResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+          description: Status of the API Response.
+        error:
+          type: string
+          example: ""
+          description: Type of Error occurred.
+        message:
+          type: string
+          example: ""
+          description: Error message.
+        data:
+          type: object
+          properties:
+            job_id:
+              type: string
+              example: "ABKDE200702060605"
+              description: Job ID for which the result is obtained.
+            pacer_search_type:
+              type: string
+              example: PACER_SEARCH_CASE
+              description: This field tells us for which type of PACER SEARCH is this result belongs to.
+            results_found:
+              type: integer
+              example: 5208
+              description: Total number of results found for the given search criteria.
+            results_extracted:
+              type: integer
+              example: 54
+              description: Total number of results extracted for the given search criteria.
+            pacer_cost:
+              type: string
+              example: "$0.10"
+              description: Pacer Bill for the search made.
+            page_number:
+              type: integer
+              example: 1
+              description: Result for which page number is been sent.
+            results:
+              type: array
+              items:
+                type: object
+                properties:
+                  case_number:
+                    description: "Case number as provided by Court."
+                    type: string
+                    maxLength: 50
+                    example:  "2:19-BK-20033"
+                  case_name:
+                    description: "Case name as provided by Court."
+                    type: string
+                    maxLength: 250
+                    example: "Mark C. Bonomi and Nicole A. Bonomi"
+                  filing_date:
+                    description: "Filing date for the case provided by the Court. Formatted as YYYY-MM-DD HH:MM:SS"
+                    type: string
+                    format: date time
+                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
+                    example: "2019-01-04 00:00:00"
+                  case_last_fetch:
+                    description: "The date and time when the case was last fetched from the Court. This date and time is in UTC. Formatted as YYYY-MM-DD HH:MM:SS Note: It is not necessary that every time the case is fetched from Court we find changes in the case information. It could be that we already have the latest information from the Court and no changes exist."
+                    type: string
+                    format: date time
+                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
+                    example: "2020-05-08 10:17:56"
+                  case_last_updates_found:
+                    description: "The date and time when the case was last fetched from the Court where we found changes in the case information. This date and time is in UTC. Formatted as YYYY-MM-DD HH:MM:SS"
+                    type: string
+                    format: date time
+                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
+                    example: "2020-04-25 10:42:46"
+                  participants_last_fetch:
+                    description: "The date and time when parties/attorneys were last fetched from the Court. Formatted as YYYY-MM-DD HH:MM:SS Note: This is currently applicable for Federal PACER cases since we have an option to exclude parties and fetch only latest docket entries when updating cases to save PACER fees."
+                    type: string
+                    format: date time
+                    pattern: '^(\d{4})-(\d?\d)-(\d?\d) (?:(2[0-3]|[01]?[0-9])):([0-5]?[0-9]):([0-5]?[0-9])$'
+                    example: "2020-04-25 10:42:46"
+                  case_type:
+                    type: object
+                    required:
+                      - name
+                      - id
+                      - legacy_id
+                      - source_name
+                    properties:
+                      name:
+                        description: "UniCourt's standardized Case Type. Full list is available in Case Type Filter API."
+                        type: string
+                        maxLength: 100
+                        example: "Chapter 13"
+                      id:
+                        description: "Unique Case Type ID."
+                        type: integer
+                        example: 213
+                      legacy_id:
+                        description: "Unique Legacy Case Type ID."
+                        type: integer
+                        example: 12
+                      source_name:
+                        description: "Case type which is present in the court site."
+                        type: integer
+                        example: 12
+                      category:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Type Category. Full list is available in Case Type Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Civil"
+                          id:
+                            description: "Unique Case Type Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Type Category ID."
+                            type: integer
+                            example: 12
+                      subcategory:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Type Sub-category. Full list is available in Case Type Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Bankruptcy"
+                          id:
+                            description: "Unique Case Type Sub Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Type Sub Category ID."
+                            type: integer
+                            example: 12
+                  case_status:
+                    type: object
+                    required:
+                      - name
+                      - id
+                      - legacy_id
+                      - source_name
+                    properties:
+                      name:
+                        description: "UniCourt's standardized Case Status. Full list is available in Case Status Filter API."
+                        type: string
+                        maxLength: 250
+                        example: "Other Pending"
+                      id:
+                        description: "Unique Case Status ID."
+                        type: integer
+                        example: 213
+                      legacy_id:
+                        description: "Unique Legacy Case Status ID."
+                        type: integer
+                        example: 12
+                      source_name:
+                        description: "Case status which is present in the court site."
+                        type: integer
+                        example: 12
+                      category:
+                        type: object
+                        required:
+                          - name
+                          - id
+                          - legacy_id
+                        properties:
+                          name:
+                            description: "UniCourt's standardized Case Status Category. Full list is available in Case Status Filter API."
+                            type: string
+                            maxLength: 100
+                            example: "Pending"
+                          id:
+                            description: "Unique Case Status Category ID."
+                            type: integer
+                            example: 213
+                          legacy_id:
+                            description: "Unique Legacy Case Status Category ID."
+                            type: integer
+                            example: 12
+                  courthouse:
+                    type: object
+                    required:
+                      - name
+                      - id
+                      - legacy_id
+                      - source_name
+                    properties:
+                      name:
+                        description: "UniCourt's standardized Court System. Full list is available in Jurisdiction Filter API."
+                        type: string
+                        maxLength: 100
+                        example: "Pennsylvania Western Bankruptcy"
+                      id:
+                        description: "Unique Courthouse ID."
+                        type: integer
+                        example: 232
+                      legacy_id:
+                        description: "Unique Legacy Courthouse ID."
+                        type: integer
+                        example: 24
+                      source_name:
+                        description: "Courthouse which is present in the court site."
+                        type: integer
+                        example: 12
+                  jurisdiction:
+                    type: object
+                    required:
+                      - name
+                      - id
+                      - legacy_id
+                    properties:
+                      name:
+                        description: "UniCourt's standardized Court System. Full list is available in Jurisdiction Filter API."
+                        type: string
+                        maxLength: 100
+                        example: "U.S. Bankruptcy Courts"
+                      id:
+                        description: "Unique Jurisdiction ID."
+                        type: integer
+                        example: 23
+                      legacy_id:
+                        description: "Unique Legacy Jurisdiction ID."
+                        type: integer
+                        example: 2
+                  county:
+                    description: "The county that the court system belongs to. This is only applicable for State Court Systems. In case of Federal Court Systems this will be null."
+                    maxLength: 100
+                    type: string
+                    nullable: true
+                    example: null
+                  state:
+                    $ref: '#/components/schemas/PacerSearchResponseStates'
+                  case_id:
+                    type: string
+                    example: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
+                    description: Case ID obtained for this set of result.
+                  pages:
+                    description: "Source data from different pages in the court website."
+                    type: object
+                    properties:
+                      PACER_CASE_LOCATOR_RESULTS:
+                        description: "PACER_CASE_LOCATOR_RESULTS search results"
+                        required:
+                          - first_fetch
+                          - last_fetch
+                          - raw_ordered_data
+                          - extracted_fields
+                        properties:
+                          first_fetch:
+                            description: "When was the page first fetched from the court site."
+                            type: string
+                            example: "2020-05-08 10:17:55"
+                          last_fetch:
+                            description: "When was the page last fetched from the court site."
+                            type: string
+                            example: "2020-05-08 10:17:55"
+                          raw_ordered_data:
+                            description: "Data in this array is ordered as it appears in source."
+                            oneOf:
+                              - $ref: "#/components/schemas/SuccessResultRawOrderedData"
+                              - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
+                          extracted_fields:
+                            description: "Data in this field is extracted from raw_ordered_data for easy access."
+                            oneOf:
+                              - $ref: "#/components/schemas/SuccessResultExtractedFields"
+                              - $ref: "#/components/schemas/SuccessResultNullAPIResponse"
+            more_results:
+              description: Determines if there is more results to fetch or not.
+              type: object
+              required:
+                - link
+                - total_pages
+                - legacy_id
+              properties:
+                link:
+                  description: "Link to the next page of PACER Search API results for a given Job ID."
+                  type: string
+                  maxLength: 100
+                  example: "https://api.unicourt.com/rest/v2/pacer/get-search-results/ABKDE200702060605/?page_number=2"
+                total_pages:
+                  description: "Total Number of pages that can be paginated to get all the results of particular Job ID."
+                  type: integer
+                  example: 97
+    SuccessResultNullAPIResponse:
+      type: string
+      example: null
+      nullable: true
+    SuccessResultRawOrderedData:
+      type: object
+      description: "Data that is specific to Case Search Results from the PACER site which is related to specific Case Information."
+      properties:
+        caseNumber:
+          type: string
+          example: '20033'
+          nullable: true
+        bankruptcyChapter:
+          type: string
+          example: null
+          nullable: true
+        jointDischargedDate:
+          type: string
+          example: null
+          nullable: true
+        caseId:
+          type: string
+          example: '383811'
+          nullable: true
+        dateFiled:
+          type: string
+          example: '2019-01-04'
+          nullable: true
+        caseYear:
+          type: string
+          example: '2019'
+          nullable: true
+        natureOfSuit:
+          type: string
+          example: null
+          nullable: true
+        dateDischarged:
+          type: string
+          example: null
+          nullable: true
+        jointDispositionMethod:
+          type: string
+          example: null
+          nullable: true
+        caseType:
+          type: string
+          example: 'bk'
+          nullable: true
+        caseNumberFull:
+          type: string
+          example: '2:2019bk20033'
+          nullable: true
+        caseTitle:
+          type: string
+          example: 'Mark C. Bonomi and Nicole A. Bonomi'
+          nullable: true
+        jointBankruptcyFlag:
+          type: string
+          example: null
+          nullable: true
+        dateTermed:
+          type: string
+          example: null
+          nullable: true
+        jointDismissedDate:
+          type: string
+          example: null
+          nullable: true
+        courtId:
+          type: string
+          example: 'pawb'
+          nullable: true
+        caseOffice:
+          type: string
+          example: '2'
+          nullable: true
+        dateDismissed:
+          type: string
+          example: null
+          nullable: true
+        caseLink:
+          type: string
+          example: 'https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811'
+          nullable: true
+        civilStatTerminated:
+          type: string
+          example: null
+          nullable: true
+        dateReopened:
+          type: string
+          example: null
+          nullable: true
+        mdlDateOrdered:
+          type: string
+          example: null
+          nullable: true
+        civilTransferee:
+          type: string
+          example: null
+          nullable: true
+        civilDateTerminated:
+          type: string
+          example: null
+          nullable: true
+        mdlExtension:
+          type: string
+          example: '20033'
+          nullable: true
+        civilDateDisposition:
+          type: string
+          example: null
+          nullable: true
+        mdlStatus:
+          type: string
+          example: null
+          nullable: true
+        civilCtoNumber:
+          type: string
+          example: null
+          nullable: true
+        civilStatDisposition:
+          type: string
+          example: null
+          nullable: true
+        mdlLittype:
+          type: string
+          example: null
+          nullable: true
+        mdlCourtId:
+          type: string
+          example: null
+          nullable: true
+        mdlTransferee:
+          type: string
+          example: null
+          nullable: true
+        mdlTransfereeDistrict:
+          type: string
+          example: null
+          nullable: true
+        dispositionMethod:
+          type: string
+          example: null
+          nullable: true
+        civilDateInitiated:
+          type: string
+          example: '20033'
+          nullable: true
+        civilStatInitiated:
+          type: string
+          example: null
+          nullable: true
+        mdlDateReceived:
+          type: string
+          example: null
+          nullable: true
+        jpmlNumber:
+          type: string
+          example: null
+          nullable: true
+        mdlJudgeLastName:
+          type: string
+          example: null
+          nullable: true
+        firstName:
+          type: string
+          example: 'GREGORY'
+          nullable: true
+        generation:
+          type: string
+          example: null
+          nullable: true
+        lastName:
+          type: string
+          example: 'BUNITSKY'
+          nullable: true
+        middleName:
+          type: string
+          example: 'N.'
+          nullable: true
+        partyRole:
+          type: string
+          example: 'aty'
+          nullable: true
+        partyType:
+          type: string
+          example: 'aty'
+          nullable: true
+        disposition:
+          type: string
+          example: null
+          nullable: true
+    SuccessResultExtractedFields:
+      type: object
+      description: "Data that is specific to Case Search Results from the PACER site which is related to specific Case Information."
+      properties:
+        case_number:
+          type: string
+          example: '20033'
+          nullable: true
+        chapter:
+          type: string
+          example: null
+          nullable: true
+        joint_discharged_date:
+          type: string
+          example: null
+          nullable: true
+        pacer_case_id:
+          type: string
+          example: '383811'
+          nullable: true
+        date_filed:
+          type: string
+          example: '2019-01-04'
+          nullable: true
+        case_year:
+          type: string
+          example: '2019'
+          nullable: true
+        nature_of_suit:
+          type: string
+          example: null
+          nullable: true
+        date_discharged:
+          type: string
+          example: null
+          nullable: true
+        joint_disposition_method:
+          type: string
+          example: null
+          nullable: true
+        case_type:
+          type: string
+          example: 'bk'
+          nullable: true
+        case_number_full:
+          type: string
+          example: '2:2019bk20033'
+          nullable: true
+        case_title:
+          type: string
+          example: 'Mark C. Bonomi and Nicole A. Bonomi'
+          nullable: true
+        joint_flag:
+          type: string
+          example: null
+          nullable: true
+        date_termed:
+          type: string
+          example: null
+          nullable: true
+        joint_dismissed_date:
+          type: string
+          example: null
+          nullable: true
+        court_id:
+          type: string
+          example: 'pawb'
+          nullable: true
+        case_office:
+          type: string
+          example: '2'
+          nullable: true
+        date_dismissed:
+          type: string
+          example: null
+          nullable: true
+        case_link:
+          type: string
+          example: 'https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811'
+          nullable: true
+        civil_stat_terminated:
+          type: string
+          example: null
+          nullable: true
+        date_reopened:
+          type: string
+          example: null
+          nullable: true
+        mdl_date_ordered:
+          type: string
+          example: null
+          nullable: true
+        civil_transferee:
+          type: string
+          example: null
+          nullable: true
+        civil_date_terminated:
+          type: string
+          example: null
+          nullable: true
+        mdl_extension:
+          type: string
+          example: '20033'
+          nullable: true
+        civil_date_disposition:
+          type: string
+          example: null
+          nullable: true
+        mdl_status:
+          type: string
+          example: null
+          nullable: true
+        civil_cto_number:
+          type: string
+          example: null
+          nullable: true
+        civil_stat_disposition:
+          type: string
+          example: null
+          nullable: true
+        mdl_littype:
+          type: string
+          example: null
+          nullable: true
+        mdl_court_id:
+          type: string
+          example: null
+          nullable: true
+        mdl_transferee:
+          type: string
+          example: null
+          nullable: true
+        mdl_transferee_district:
+          type: string
+          example: null
+          nullable: true
+        disposition_method:
+          type: string
+          example: null
+          nullable: true
+        civil_date_initiated:
+          type: string
+          example: '20033'
+          nullable: true
+        civil_stat_initiated:
+          type: string
+          example: null
+          nullable: true
+        mdl_date_received:
+          type: string
+          example: null
+          nullable: true
+        jpml_number:
+          type: string
+          example: null
+          nullable: true
+        mdl_judge_last_name:
+          type: string
+          example: null
+          nullable: true
+        first_name:
+          type: string
+          example: 'GREGORY'
+          nullable: true
+        generation:
+          type: string
+          example: null
+          nullable: true
+        last_name:
+          type: string
+          example: 'BUNITSKY'
+          nullable: true
+        middle_name:
+          type: string
+          example: 'N.'
+          nullable: true
+        party_role:
+          type: string
+          example: 'aty'
+          nullable: true
+        party_type:
+          type: string
+          example: 'aty'
+          nullable: true
+        disposition:
+          type: string
+          example: null
+          nullable: true
+    FailureInvalidInputParameter:
+      type: object
+      properties:
+        status:
+          type: string
+          example: FAILURE
+        result_found:
+          type: string
+          example: 'NO'
+        message:
+          type: string
+          example: API token missing.
+        error:
+          type: string
+          example: INVALID_INPUT_PARAMETER
+    FailureUnauthorizedAccess:
+      type: object
+      properties:
+        status:
+          type: string
+          example: FAILURE
+        result_found:
+          type: string
+          example: 'NO'
+        message:
+          type: string
+          example: Access denied! Received an invalid token.
+        error:
+          type: string
+          example: UNAUTHORIZED_ACCESS
+    FailureInternalServerError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: FAILURE
+        result_found:
+          type: string
+          example: 'NO'
+        message:
+          type: string
+          example: Internal Server Error. Service is down
+        error:
+          type: string
+          example: INTERNAL_SERVER_ERROR
+  examples:
+    SuccessBulkDataAPIResponse:
+      value:
+        status: "SUCCESS"
+        job_id: "ABKDE200702060605"
+    SuccessResultSearchAPIResponse:
+      value:
+        status: "SUCCESS"
+        error: ""
+        message: ""
+        data:
+          job_id: "ABKDE200702060605"
+          pacer_search_type: "PACER_SEARCH_CASE"
+          results_found: 5208
+          results_extracted: 54
+          pacer_cost: "$0.10"
+          page_number: 1
+          results:
+            - case_number: '2:19-BK-20033'
+              case_name: 'Mark C. Bonomi and Nicole A. Bonomi'
+              filing_date: '2019-01-04 00:00:00'
+              case_last_fetch: '2020-05-08 10:17:56'
+              case_last_updates_found: '2020-04-25 10:42:46'
+              participants_last_fetch: '2020-04-25 10:42:46'
+              case_type:
+                name: 'Chapter 13'
+                id: 12
+                legacy_id: 123
+                source_name: 'CHAPTER 13'
+                subcategory:
+                  name: 'Bankruptcy'
+                  id: 14
+                  legacy_id: 2
+                category:
+                  name: 'Civil'
+                  id: 42
+                  legacy_id: 26
+              case_status:
+                name: 'Other Pending'
+                id: 14
+                legacy_id: 13
+                source_name: 'PENDING'
+                category:
+                  name: 'Pending'
+                  id: 2
+                  legacy_id: 2
+              courthouse:
+                name: 'Pennsylvania Western Bankruptcy'
+                id: 224
+                legacy_id: 125
+              jurisdiction:
+                name: 'U.S. Bankruptcy Courts'
+                id: 102
+                legacy_id: 54
+                source_name: 'PAWBKE'
+              county: null
+              state: 'PA'
+              case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0901"
+              pages:
+                PACER_CASE_LOCATOR_RESULTS:
+                  last_fetch: '2020-04-25 10:42:46'
+                  first_fetch: '2019-05-08 10:17:56'
+                  extracted_fields::
+                    case_number: "4960"
+                    chapter: null
+                    joint_discharged_date: null
+                    pacer_case_id: "383811"
+                    date_filed: "2019-01-04"
+                    case_year: "2019"
+                    nature_of_suit: null
+                    date_discharged: null
+                    joint_disposition_method: null
+                    case_type: "bk"
+                    case_number_full: "2:2019bk20033"
+                    case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    joint_flag: "true"
+                    date_termed: null
+                    joint_dismissed_date: null
+                    court_id: "pawb"
+                    case_office: "2"
+                    disposition_method: null
+                    date_dismissed: null
+                    case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civil_stat_terminated: "State Court"
+                    date_reopened: null
+                    mdl_date_ordered: null
+                    civil_transferee: "2007-67448"
+                    civil_date_terminated: "2016-09-27"
+                    mdl_extension: "20033"
+                    civil_date_disposition: "2016-10-04"
+                    mdl_status: null
+                    civil_cto_number: "-500"
+                    civil_stat_disposition: "NTN"
+                    mdl_littype: null
+                    mdl_court_id: "paedce"
+                    mdl_transferee: null
+                    mdl_transferee_district: null
+                    civil_date_initiated: "2016-10-04"
+                    civil_stat_initiated: "XYZ Case"
+                    mdl_date_received: null
+                    jpml_number: "875"
+                    mdl_judge_last_name: null
+                    first_name: "GREGORY"
+                    generation: null
+                    last_name: "BUNITSKY"
+                    middle_name: "N."
+                    party_role: "aty"
+                    party_type: "aty"
+                    disposition: null
+                  raw_ordered_data:
+                    caseNumber: "4960"
+                    bankruptcyChapter: null
+                    jointDischargedDate: null
+                    caseId: "383811"
+                    dateFiled: "2019-01-04"
+                    caseYear: "2019"
+                    natureOfSuit: null
+                    dateDischarged: null
+                    jointDispositionMethod: null
+                    caseType: "bk"
+                    caseNumberFull: "2:2019bk20033"
+                    caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    jointBankruptcyFlag: "true"
+                    dateTermed: null
+                    jointDismissedDate: null
+                    courtId: "pawb"
+                    caseOffice: "2"
+                    dispositionMethod: null
+                    dateDismissed: null
+                    caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civilStatTerminated: "State Court"
+                    dateReopened: null
+                    mdlDateOrdered: null
+                    civilTransferee: "2007-67448"
+                    civilDateTerminated: "2016-09-27"
+                    mdlExtension: "20033"
+                    civilDateDisposition: "2016-10-04"
+                    mdlStatus: null
+                    civilCtoNumber: "-500"
+                    civilStatDisposition: "NTN"
+                    mdlLittype: null
+                    mdlCourtId: "paedce"
+                    mdlTransferee: null
+                    mdlTransfereeDistrict: null
+                    civilDateInitiated: "2016-10-04"
+                    civilStatInitiated: "XYZ Case"
+                    mdlDateReceived: null
+                    jpmlNumber: "875"
+                    mdlJudgeLastName: null
+                    firstName: "GREGORY"
+                    generation: null
+                    lastName: "BUNITSKY"
+                    middleName: "N."
+                    partyRole: "aty"
+                    partyType: "aty"
+                    disposition: null
+            - case_number: '2:19-BK-20044'
+              case_name: 'Mark C. Glen and Nicole A. Jacobs'
+              filing_date: '2019-01-04 00:00:00'
+              case_last_fetch: '2020-05-08 10:17:56'
+              case_last_updates_found: '2020-04-25 10:42:46'
+              participants_last_fetch: '2020-04-25 10:42:46'
+              case_type:
+                name: 'Chapter 13'
+                id: 12
+                legacy_id: 123
+                source_name: 'CHAPTER 13'
+                subcategory:
+                  name: 'Bankruptcy'
+                  id: 14
+                  legacy_id: 2
+                category:
+                  name: 'Civil'
+                  id: 42
+                  legacy_id: 26
+              case_status:
+                name: 'Other Pending'
+                id: 14
+                legacy_id: 13
+                source_name: 'PENDING'
+                category:
+                  name: 'Pending'
+                  id: 2
+                  legacy_id: 2
+              courthouse:
+                name: 'Pennsylvania Western Bankruptcy'
+                id: 224
+                legacy_id: 125
+              jurisdiction:
+                name: 'U.S. Bankruptcy Courts'
+                id: 102
+                legacy_id: 54
+                source_name: 'PAWBKE'
+              county: null
+              state: 'PA'
+              case_id: "FFCBQHBOH4YESFISHNJWHCK4LZFQY0911"
+              pages:
+                PACER_CASE_LOCATOR_RESULTS:
+                  last_fetch: '2020-04-25 10:42:46'
+                  first_fetch: '2019-05-08 10:17:56'
+                  extracted_fields::
+                    case_number: "4960"
+                    chapter: null
+                    joint_discharged_date: null
+                    pacer_case_id: "383811"
+                    date_filed: "2019-01-04"
+                    case_year: "2019"
+                    nature_of_suit: null
+                    date_discharged: null
+                    joint_disposition_method: null
+                    case_type: "bk"
+                    case_number_full: "2:2019bk20043"
+                    case_title: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    joint_flag: "true"
+                    date_termed: null
+                    joint_dismissed_date: null
+                    court_id: "pawb"
+                    case_office: "2"
+                    disposition_method: null
+                    date_dismissed: null
+                    case_link: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383821"
+                    civil_stat_terminated: "State Court"
+                    date_reopened: null
+                    mdl_date_ordered: null
+                    civil_transferee: "2007-67448"
+                    civil_date_terminated: "2016-09-27"
+                    mdl_extension: "20033"
+                    civil_date_disposition: "2016-10-04"
+                    mdl_status: null
+                    civil_cto_number: "-500"
+                    civil_stat_disposition: "NTN"
+                    mdl_littype: null
+                    mdl_court_id: "paedce"
+                    mdl_transferee: null
+                    mdl_transferee_district: null
+                    civil_date_initiated: "2016-10-04"
+                    civil_stat_initiated: "XYZ Case"
+                    mdl_date_received: null
+                    jpml_number: "875"
+                    mdl_judge_last_name: null
+                    first_name: "GREGORY"
+                    generation: null
+                    last_name: "BUNITSKY"
+                    middle_name: "N."
+                    party_role: "aty"
+                    party_type: "aty"
+                    disposition: null
+                  raw_ordered_data:
+                    caseNumber: "4960"
+                    bankruptcyChapter: null
+                    jointDischargedDate: null
+                    caseId: "383811"
+                    dateFiled: "2019-01-04"
+                    caseYear: "2019"
+                    natureOfSuit: null
+                    dateDischarged: null
+                    jointDispositionMethod: null
+                    caseType: "bk"
+                    caseNumberFull: "2:2019bk20033"
+                    caseTitle: "ANGELUCCI et al v. UNION CARBIDE CORPORATION"
+                    jointBankruptcyFlag: "true"
+                    dateTermed: null
+                    jointDismissedDate: null
+                    courtId: "pawb"
+                    caseOffice: "2"
+                    dispositionMethod: null
+                    dateDismissed: null
+                    caseLink: "https://ecf.pawb.uscourts.gov/cgi-bin/iqquerymenu.pl?383811"
+                    civilStatTerminated: "State Court"
+                    dateReopened: null
+                    mdlDateOrdered: null
+                    civilTransferee: "2007-67448"
+                    civilDateTerminated: "2016-09-27"
+                    mdlExtension: "20033"
+                    civilDateDisposition: "2016-10-04"
+                    mdlStatus: null
+                    civilCtoNumber: "-500"
+                    civilStatDisposition: "NTN"
+                    mdlLittype: null
+                    mdlCourtId: "paedce"
+                    mdlTransferee: null
+                    mdlTransfereeDistrict: null
+                    civilDateInitiated: "2016-10-04"
+                    civilStatInitiated: "XYZ Case"
+                    mdlDateReceived: null
+                    jpmlNumber: "875"
+                    mdlJudgeLastName: null
+                    firstName: "GREGORY"
+                    generation: null
+                    lastName: "BUNITSKY"
+                    middleName: "N."
+                    partyRole: "aty"
+                    partyType: "aty"
+                    disposition: null
+          more_results:
+            link: "https://api.unicourt.com/rest/v2/pacer/get-search-results/ABKDE200702060605/?page_number=2"
+            total_pages: 97
+    FailureApiTokenMissing:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "API token missing."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureJobIdNotPassed:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Job ID is a mandatory field."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidCaseTypeForMdlCase:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Case Type is an invalid parameter for Multidistrict Court Type."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidRegionForMdlCase:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Region is an invalid parameter for Multidistrict Court Type."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidFormatMdlCase:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Not an valid MDL Case Format. MDL Case Number should be either in only digits (ie: 1234) or it should have a prefix F with the case number (ie: F1234)."
+        error: "INVALID_INPUT_PARAMETER"
+    FailurePageNumberNotPassed:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Page Number is a mandatory field."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidPageNumber:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Invalid page number, page number minimum value is 1 and maximum is 54."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureExceededPageNumber:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "No more search results available"
+        error: "INVALID_INPUT_PARAMETER"
+    FailureRequiredDataNotSent:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Either one of data among mentioned here needs to be sent - Case Number, Last Name or Entity Name, Ssn Or Ein Number, Case File Start Date or Case File End Date should be sent."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidSsnOrEinFormat:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "SSN or EIN should consist of 9 digits with or without delimiter dash (-)."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidFourDigitSsn:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "SSN should consist of last 4 digits only."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureRequiredDataNotSentForBkSearch:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Either one of data among mentioned here needs to be sent - Last Name or Entity Name, Case Number, Chapter, Date Filed, Date Closed, Date Dismissed or Date Discharged should be sent while searching the data using 4 digit ssn number."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidCaseNumber:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Case Number Format should be of the format mentioned in the Documentation."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureFirstNameOrMiddleNameAddedWithoutLastNameOrEntityName:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "To add First Name or Middle Name in your search criteria Last Name or Entity Name is a must required field."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureWrongCourtSelectedForNatureOfSuit:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Nature of Suit is supported only for Appellate and Civil Cases."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureWrongCourtSelectedForChapters:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Chapters search parameter is only for Bankruptcy Cases."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidCaseType:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Invalid Case Type requested. Please select a valid Case Type from the [Need a separate UniCourt Link] APPENDIX for Case Type given in the Documentation."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidChapters:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Invalid Chapters requested. Please select a valid Chapters from the [Need a separate UniCourt Link] APPENDIX for Chapters given in the Documentation."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidNatureOfSuit:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Invalid Nature Of Suit requested. Please select a valid Nature Of Suit from the [Need a separate UniCourt Link] APPENDIX for Nature Of Suit given in the Documentation."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureInvalidCourtRegion:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Invalid Court Region requested. Please select a valid Court Region from the [Need a separate UniCourt Link] APPENDIX for Court Region given in the Documentation."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureBankruptcyDateDismissedPassedForWrongCourtType:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Bankruptcy Date Dismissed is only for court type Bankruptcy."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureBankruptcyDateDischargedPassedForWrongCourtType:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Bankruptcy Date Discharged is only for court type Bankruptcy."
+        error: "INVALID_INPUT_PARAMETER"
+    FailureAccessDeniedFortoken:
+      value:
+        status: "FAILURE"
+        result_found: "NO"
+        message: "Access denied! Received an invalid token."
+        error: "UNAUTHORIZED_ACCESS"
+    FailureInternalServerError:
+      value:
+          status: "FAILURE"
+          result_found: "NO"
+          message: "Internal Server Error. Service is down"
+          error: "INTERNAL_SERVER_ERROR"
+    SuccessCallBackResponse:
+      value:
+        status: "SUCCESS"
+        message: "Data posted to endpoint successfully"
