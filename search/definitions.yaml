@@ -996,18 +996,6 @@ definitions:
         minimum: 2
         maximum: 10000
 
-  export_data_types:
-    description: You may specify any of these.
-    type: object
-    title: DataTypeAndFields
-    properties:
-      matched_case:
-        $ref: "search/automation/output_types.yaml#/definitions/matched_case"
-      matched_party:
-        $ref: "search/automation/output_types.yaml#/definitions/matched_party"
-      matched_party_attorney:
-        $ref: "search/automation/output_types.yaml#/definitions/matched_party_attorney"
-
   case_id_search:
     description: use this to set up export job for case key
     title: Case ID

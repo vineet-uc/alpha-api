@@ -3,11 +3,5 @@
     "module": "Search API's",
     "description": "Search API's",
     "path": "search/main.yaml"
-  },
-  {
-    "application": "PCL",
-    "module": "PCL API's",
-    "description": "PCL API's",
-    "path": "pcl/pcl_search.yaml"
   }
 ]

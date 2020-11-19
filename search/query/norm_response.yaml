@@ -1,0 +1,2215 @@
+openapi: 3.0.0
+
+components:
+  responses:
+    party:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Party'
+              total_results_found:
+                type: integer
+              next_page:
+                type: string
+                example: 'https://api.unicourt.com/norm/party/xayz1nasdfd&page=2'
+                format: uri
+            required:
+              - results
+              - total_results_found
+              - next_page
+
+    attorney:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  title: Norm Attorney
+                  type: object
+                  properties:
+                    norm_attorney_id:
+                      type: string
+                    version:
+                      type: string
+                    first_name:
+                      type: string
+                    middle_name:
+                      type: string
+                    last_name:
+                      type: string
+                    full_name:
+                      type: string
+                    is_real_world_entity:
+                      type: string
+                    court_records_data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/court_data'
+                    state_bar_data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/AvailableBar'
+                  required:
+                    - norm_attorney_id
+                    - version
+                    - first_name
+                    - middle_name
+                    - last_name
+                    - full_name
+                    - is_real_world_entity
+                    - court_records_data
+                    - state_bar_data
+              total_results_found:
+                type: integer
+              next_page:
+                type: string
+                description: link to next page of results if applicable.
+            required:
+              - results
+              - total_results_found
+              - next_page
+
+    judge:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  title: Norm Judge
+                  type: object
+                  properties:
+                    norm_judge_id:
+                      type: string
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    middle_name:
+                      type: string
+                    name:
+                      type: string
+                    court_records_data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/court_data'
+                    judicial_data:
+                      $ref: '#/components/schemas/JudgePublicData'
+                  required:
+                    - norm_judge_id
+                    - first_name
+                    - last_name
+                    - middle_name
+                    - name
+                    - court_records_data
+                    - judicial_data
+              total_results_found:
+                type: integer
+              next_page:
+                type: string
+                description: link to next page if applicable
+              total_pages:
+                type: integer
+                description: Total No of pages
+            required:
+              - results
+              - total_results_found
+              - next_page
+          examples:
+            example-1:
+              value:
+                results:
+                  - norm_judge_id: string
+                    first_name: string
+                    last_name: string
+                    middle_name: string
+                    name: string
+                    court_records_data:
+                      - norm_jurisdiction: string
+                        total_cases: 0
+                        top_courthouses:
+                          - jurisdiction:
+                              name: U.S. Bankruptcy Courts
+                              id: 162
+                              legacy_id: 54
+                              source_name: string
+                              latitude: 112
+                              longitude: -36
+                              jurisdiction_type: court-system
+                            case_count: 0
+                        top_court_systems:
+                          - jurisdiction:
+                              name: U.S. Bankruptcy Courts
+                              id: 162
+                              legacy_id: 54
+                              source_name: string
+                              latitude: 112
+                              longitude: -36
+                              jurisdiction_type: court-system
+                            case_count: 0
+                        top_case_types:
+                          - case_type_category:
+                              name: string
+                              id: string
+                              legacy_id: string
+                              subcategory:
+                                name: string
+                                id: string
+                                legacy_id: string
+                                case_type:
+                                  name: string
+                                  id: 0
+                                  legacy_id: 0
+                                  source_name: string
+                            case_count: 0
+                        top_case_type_categories:
+                          - case_type_category:
+                              name: string
+                              id: string
+                              legacy_id: string
+                              subcategory:
+                                name: string
+                                id: string
+                                legacy_id: string
+                                case_type:
+                                  name: string
+                                  id: 0
+                                  legacy_id: 0
+                                  source_name: string
+                            case_count: 0
+                        more_courthouses: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+                        more_court_systems: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+                        more_case_types: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type"&page=1
+                        more_case_type_categories: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type-group"&page=1
+                        cases: 'https://api.unicourt.com/search?q="xvxsLkasdf"'
+                    judicial_data:
+                      aba_ratings:
+                        - rating: string
+                          year: string
+                      contact:
+                        $ref: '#/components/schemas/ContactSchema'
+                      bio:
+                        ethinicity: string
+                        birth_date: string
+                        birth_city: string
+                        death_date: string
+                        death_city: string
+                        death_state: string
+                        birth_state: string
+                        '': string
+                      education: string
+                      aliases:
+                        - string
+                      professional_career: string
+                      nomination_date: string
+                      service_history:
+                        termination_date: string
+                        reason_for_termination: string
+                        appointed_by: string
+                      status: string
+                total_results_found: 100
+                next_page: string
+                total_pages: 10
+
+    organization:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+              total_results_found:
+                type: integer
+              next_page:
+                type: string
+                description: Link to next page of request.
+            required:
+              - results
+              - total_results_found
+              - next_page
+
+    law_firm:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LawFirm'
+              total_results_found:
+                type: integer
+              next_page:
+                type: string
+                example: 'https://api.unicourt.com/norm/law-firm/xayz1nasdfd&page=2'
+              total_pages:
+                type: string
+                description: Total Number of pages
+            required:
+              - results
+              - total_results_found
+              - next_page
+              - total_pages
+          examples:
+            example-1:
+              value:
+                results:
+                  - norm_law_firm_id: string
+                    org_data:
+                      norm_organization_id: string
+                      name: string
+                      version: string
+                      sos_data:
+                        - contact: null
+                          addresses:
+                            - street_address_1: 4407 N DIVISION ST
+                              street_address_2: STE 516
+                              city: SPOKANE
+                              state_name: NEW YORK
+                              state_code: NY
+                              country_name: CANADA
+                              country_code: USA
+                              zip: '99207'
+                              zip4: '1005'
+                              is_active: false
+                              inactive_date: '2017-07-21'
+                              first_fetch: '2017-07-21 17:32:28'
+                              last_fetch: '2017-07-21 17:32:28'
+                              address_id: '?'
+                          phone_numbers:
+                            - phone_number: +1 123 42344424
+                              source_phone_number: (123) 42344424
+                              phone_type: OFFICE
+                              is_active: false
+                              inactive_date: '2017-07-21'
+                              first_fetch: '2017-07-21 17:32:28'
+                              last_fetch: '2017-07-21 17:32:28'
+                          emails:
+                            - email_id: mike@smitch.com
+                              is_active: false
+                              inactive_date: '2017-07-21'
+                              first_fetch: '2017-07-21 17:32:28'
+                              last_fetch: '2017-07-21 17:32:28'
+                          fein: string
+                          mergers:
+                            direct_children:
+                              - from_date: '2019-08-24'
+                                org_name: string
+                                to_date: '2019-08-24'
+                                org_details: string
+                            parent:
+                              - from_date: '2019-08-24'
+                                org_name: string
+                                to_date: '2019-08-24'
+                                org_details: string
+                          name_changes:
+                            - from_date: '2019-08-24'
+                              org_name: string
+                              to_date: '2019-08-24'
+                              org_details: string
+                          sos_number: string
+                          associated_entities:
+                            - entity_name: string
+                              entity_type: Partner
+                              contact:
+                                addresses:
+                                  - street_address_1: 4407 N DIVISION ST
+                                    street_address_2: STE 516
+                                    city: SPOKANE
+                                    state_name: NEW YORK
+                                    state_code: NY
+                                    country_name: CANADA
+                                    country_code: USA
+                                    zip: '99207'
+                                    zip4: '1005'
+                                    is_active: false
+                                    inactive_date: '2017-07-21'
+                                    first_fetch: '2017-07-21 17:32:28'
+                                    last_fetch: '2017-07-21 17:32:28'
+                                    address_id: '?'
+                                phone_numbers:
+                                  - phone_number: +1 123 42344424
+                                    source_phone_number: (123) 42344424
+                                    phone_type: OFFICE
+                                    is_active: false
+                                    inactive_date: '2017-07-21'
+                                    first_fetch: '2017-07-21 17:32:28'
+                                    last_fetch: '2017-07-21 17:32:28'
+                                emails:
+                                  - email_id: mike@smitch.com
+                                    is_active: false
+                                    inactive_date: '2017-07-21'
+                                    first_fetch: '2017-07-21 17:32:28'
+                                    last_fetch: '2017-07-21 17:32:28'
+                          registered_date: '2019-08-24'
+                          status: Active
+                          inactivation_date: '2019-08-24'
+                          state_code: string
+                      organization_type: business
+                      lei: string
+                      cik: string
+                      ticker: string
+                      sic: string
+                      sic_description: string
+                      naics: string
+                      naics_description: string
+                      is_party_with_cases: true
+                      norm_party_details: string
+                      is_law_firm_with_cases: true
+                      norm_law_firm_details: string
+                    court_records_data:
+                      - norm_jurisdiction: string
+                        total_cases: 0
+                        top_courthouses:
+                          - jurisdiction:
+                              name: U.S. Bankruptcy Courts
+                              id: 162
+                              legacy_id: 54
+                              source_name: string
+                              latitude: 112
+                              longitude: -36
+                              jurisdiction_type: court-system
+                            case_count: 0
+                        top_court_systems:
+                          - jurisdiction:
+                              name: U.S. Bankruptcy Courts
+                              id: 162
+                              legacy_id: 54
+                              source_name: string
+                              latitude: 112
+                              longitude: -36
+                              jurisdiction_type: court-system
+                            case_count: 0
+                        top_case_types:
+                          - case_type_category:
+                              name: string
+                              id: string
+                              legacy_id: string
+                              subcategory:
+                                name: string
+                                id: string
+                                legacy_id: string
+                                case_type:
+                                  name: string
+                                  id: 0
+                                  legacy_id: 0
+                                  source_name: string
+                            case_count: 0
+                        top_case_type_categories:
+                          - case_type_category:
+                              name: string
+                              id: string
+                              legacy_id: string
+                              subcategory:
+                                name: string
+                                id: string
+                                legacy_id: string
+                                case_type:
+                                  name: string
+                                  id: 0
+                                  legacy_id: 0
+                                  source_name: string
+                            case_count: 0
+                        more_courthouses: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+                        more_court_systems: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+                        more_case_types: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type"&page=1
+                        more_case_type_categories: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type-group"&page=1
+                        cases: 'https://api.unicourt.com/search?q="xvxsLkasdf"'
+                total_results_found: 0
+                next_page: 'https://api.unicourt.com/norm/law-firm/xayz1nasdfd&page=2'
+                total_pages: string
+
+
+
+
+  schemas:
+    Jurisdiction:
+      title: Jurisdiction
+      type: object
+      description: Returns properties for a courthouse or court_system.
+      x-examples: {}
+      properties:
+        name:
+          type: string
+          example: U.S. Bankruptcy Courts
+        id:
+          type: integer
+          example: 162
+        legacy_id:
+          type: integer
+          example: 54
+        source_name:
+          type: string
+        latitude:
+          type: number
+          example: 112
+        longitude:
+          type: number
+          example: -36
+        jurisdiction_type:
+          type: string
+          enum:
+            - courthouse
+            - court-system
+          example: court-system
+      required:
+        - name
+        - id
+        - legacy_id
+        - source_name
+        - latitude
+        - longitude
+        - jurisdiction_type
+    court_data:
+      title: Court Aggregate Data
+      type: object
+      description: Provides Court Data per norm jurisdiction for an entity.
+      properties:
+        norm_jurisdiction:
+          type: string
+        total_cases:
+          type: integer
+        top_courthouses:
+          type: array
+          items:
+            type: object
+            properties:
+              jurisdiction:
+                $ref: '#/components/schemas/Jurisdiction'
+              case_count:
+                type: integer
+            required:
+              - jurisdiction
+              - case_count
+        top_court_systems:
+          type: array
+          items:
+            type: object
+            properties:
+              jurisdiction:
+                $ref: '#/components/schemas/Jurisdiction'
+              case_count:
+                type: integer
+            required:
+              - jurisdiction
+              - case_count
+        top_case_types:
+          type: array
+          items:
+            type: object
+            properties:
+              case_type_category:
+                $ref: '#/components/schemas/CaseTypeCategory'
+              case_count:
+                type: integer
+            required:
+              - case_count
+        top_case_type_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              case_type_category:
+                $ref: '#/components/schemas/CaseTypeCategory'
+              case_count:
+                type: integer
+            required:
+              - case_count
+        more_courthouses:
+          type: string
+          example: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+        more_court_systems:
+          type: string
+          example: /attorney/xazyasdflkd/california-state-courts/case-count-by-jurisdiction?group_by="courthouse"&page=1
+        more_case_types:
+          type: string
+          example: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type"&page=1
+        more_case_type_categories:
+          type: string
+          example: /attorney/xazyasdflkd/california-state-courts/case-count-by-case-type?group_by="case-type-group"&page=1
+        cases:
+          type: string
+          description: Link to cases API for this entity. TBD by search
+          example: 'https://api.unicourt.com/search?q="xvxsLkasdf"'
+          format: uri
+      required:
+        - norm_jurisdiction
+        - total_cases
+        - top_courthouses
+        - top_court_systems
+        - top_case_types
+        - top_case_type_categories
+        - more_courthouses
+        - more_court_systems
+        - more_case_types
+        - more_case_type_categories
+        - cases
+    AvailableSOS:
+      title: SOS
+      type: object
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSchema'
+        fein:
+          type: string
+        mergers:
+          type: object
+          required:
+            - direct_children
+            - parent
+          properties:
+            direct_children:
+              type: array
+              items:
+                $ref: '#/components/schemas/SOSAssociatedOrg'
+            parent:
+              type: array
+              items:
+                $ref: '#/components/schemas/SOSAssociatedOrg'
+        name_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SOSAssociatedOrg'
+        sos_number:
+          type: string
+        associated_entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/SOSAssociatedPerson'
+        registered_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+            - Active
+            - Inactive
+            - Not Classified
+            - Unkown
+        inactivation_date:
+          type: string
+          format: date
+        state_code:
+          type: string
+      required:
+        - contact
+        - fein
+        - mergers
+        - name_changes
+        - sos_number
+        - associated_entities
+        - registered_date
+        - status
+        - inactivation_date
+        - state_code
+    AddressSchema:
+      type: object
+      title: Address
+      description: Address object Data Schema
+      required:
+        - street_address_1
+        - street_address_2
+        - city
+        - state_name
+        - state_code
+        - country_name
+        - country_code
+        - zip
+        - zip4
+        - is_active
+        - inactive_date
+        - first_fetch
+        - last_fetch
+        - address_id
+      properties:
+        street_address_1:
+          type: string
+          nullable: false
+          description: 1st Part of the street address
+          example: 4407 N DIVISION ST
+          maxLength: 250
+        street_address_2:
+          type: string
+          nullable: true
+          description: 2nd Part of the street address
+          example: STE 516
+          maxLength: 150
+        city:
+          type: string
+          nullable: true
+          description: City
+          example: SPOKANE
+          maxLength: 100
+        state_name:
+          type: string
+          nullable: true
+          description: State Name
+          example: NEW YORK
+          maxLength: 100
+        state_code:
+          type: string
+          enum:
+            - AL
+            - AK
+            - AZ
+            - AR
+            - CA
+            - CO
+            - CT
+            - DE
+            - FL
+            - GA
+            - HI
+            - ID
+            - IL
+            - IN
+            - IA
+            - KS
+            - KY
+            - LA
+            - ME
+            - MD
+            - MA
+            - MI
+            - MN
+            - MS
+            - MO
+            - MT
+            - NE
+            - NV
+            - NH
+            - NJ
+            - NM
+            - NY
+            - NC
+            - ND
+            - OH
+            - OK
+            - OR
+            - PA
+            - RI
+            - SC
+            - SD
+            - TN
+            - TX
+            - UT
+            - VT
+            - VA
+            - WA
+            - DC
+            - WV
+            - WI
+            - WY
+          nullable: true
+          description: State Code if the state is a US state
+          example: NY
+          maxLength: 2
+          minLength: 2
+        country_name:
+          type: string
+          nullable: true
+          description: Country Name
+          example: CANADA
+          maxLength: 100
+        country_code:
+          type: string
+          nullable: true
+          description: 'ISO 3166-1 alpha-3 (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#Officially_assigned_code_elements) Code of the country if country name is present'
+          example: USA
+          maxLength: 3
+          minLength: 3
+        zip:
+          type: string
+          nullable: true
+          description: Zip code of the address
+          example: '99207'
+          maxLength: 10
+        zip4:
+          type: string
+          nullable: true
+          description: '4 digit extension of zip, if the address is a US address'
+          example: '1005'
+          minLength: 4
+          maxLength: 4
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the address is active or not
+          example: false
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: 'if the address is not active, this field contains the date on which it got inactivated. this field will be null if the address is active'
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          format: string
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          format: string
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+        address_id:
+          type: string
+          nullable: false
+          maxLength: 10
+          description: Unique id for the record
+          example: '?'
+      x-examples:
+        example-1:
+          street_address_1: 4407 N DIVISION ST
+          street_address_2: STE 516
+          city: SPOKANE
+          state_name: NEW YORK
+          state_code: NY
+          country_name: CANADA
+          country_code: USA
+          zip: '99207'
+          zip4: '1005'
+          is_active: false
+          inactive_date: '2017-07-21'
+          first_fetch: '2017-07-21 17:32:28'
+          last_fetch: '2017-07-21 17:32:28'
+          address_id: '?'
+    PhoneSchema:
+      type: object
+      title: Phone
+      description: Phone object Data Schema
+      required:
+        - phone_number
+        - source_phone_number
+        - phone_type
+        - is_active
+        - inactive_date
+        - first_fetch
+        - last_fetch
+      properties:
+        phone_number:
+          type: string
+          nullable: false
+          format: phone
+          description: Standardized Phone Number
+          example: +1 123 42344424
+          maxLength: 30
+        source_phone_number:
+          type: string
+          nullable: false
+          description: Phone Number as found in the source
+          example: (123) 42344424
+          maxLength: 30
+        phone_type:
+          type: string
+          nullable: false
+          description: Standardized Resolved Phone type
+          example: OFFICE
+          maxLength: 250
+          enum:
+            - DEFAULT
+            - OFFICE
+            - FAX
+            - PHONE
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the phone is active or not
+          example: false
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: 'if the phone is not active, this field contains the date on which it got inactivated. this field will be null if the phone is active'
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+    EmailSchema:
+      type: object
+      title: Email
+      description: Email object Data Schema
+      required:
+        - email_id
+        - is_active
+        - inactive_date
+        - first_fetch
+        - last_fetch
+      properties:
+        email_id:
+          type: string
+          nullable: false
+          format: email
+          description: email id
+          example: mike@smitch.com
+          maxLength: 100
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the email is active or not
+          example: false
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: 'if the email is not active, this field contains the date on which it got inactivated. this field will be null if the email is active'
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+    ContactSchema:
+      type: object
+      title: Contact
+      description: Contact object Data Schema
+      required:
+        - addresses
+        - phone_numbers
+        - emails
+      properties:
+        addresses:
+          type: array
+          description: List of available addresses
+          nullable: true
+          items:
+            $ref: '#/components/schemas/AddressSchema'
+        phone_numbers:
+          type: array
+          description: List of available phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneSchema'
+          nullable: true
+        emails:
+          type: array
+          description: List of available emails
+          items:
+            $ref: '#/components/schemas/EmailSchema'
+          nullable: true
+      x-examples:
+        example-1:
+          addresses:
+            - street_address_1: 4407 N DIVISION ST
+              street_address_2: STE 516
+              city: SPOKANE
+              state_name: NEW YORK
+              state_code: NY
+              country_name: CANADA
+              country_code: USA
+              zip: '99207'
+              zip4: '1005'
+              is_active: false
+              inactive_date: '2017-07-21'
+              first_fetch: '2017-07-21 17:32:28'
+              last_fetch: '2017-07-21 17:32:28'
+              address_id: '?'
+          phone_numbers:
+            - phone_number: +1 123 42344424
+              source_phone_number: (123) 42344424
+              phone_type: OFFICE
+              is_active: false
+              inactive_date: '2017-07-21'
+              first_fetch: '2017-07-21 17:32:28'
+              last_fetch: '2017-07-21 17:32:28'
+          emails:
+            - email_id: mike@smitch.com
+              is_active: false
+              inactive_date: '2017-07-21'
+              first_fetch: '2017-07-21 17:32:28'
+              last_fetch: '2017-07-21 17:32:28'
+    Parent:
+      title: Parent
+      type: object
+      x-examples:
+        example-1:
+          from_date: '2019-08-24'
+          name: string
+          to_date: '2019-08-24'
+      properties:
+        from_date:
+          type: string
+          format: date
+        organisation:
+          $ref: '#/components/schemas/Organization'
+        to_date:
+          type: string
+          format: date
+      required:
+        - from_date
+        - organisation
+        - to_date
+    SOSAssociatedOrg:
+      title: SOS Associated Organisation
+      type: object
+      x-examples:
+        example-1:
+          from_date: '2019-08-24'
+          name: string
+          to_date: '2019-08-24'
+      properties:
+        from_date:
+          type: string
+          format: date
+        org_name:
+          type: string
+        to_date:
+          type: string
+          format: date
+        org_details:
+          type: string
+    NameChange:
+      title: Name Change
+      type: object
+      properties:
+        from_date:
+          type: string
+          format: date
+        name:
+          type: string
+        to_date:
+          type: string
+          format: date
+      required:
+        - from_date
+        - name
+        - to_date
+    SOSAssociatedPerson:
+      title: SOS Associated Person
+      type: object
+      properties:
+        entity_name:
+          type: string
+        entity_type:
+          type: string
+          enum:
+            - Partner
+            - Agent
+            - CEO
+            - Partner/General Member
+        contact:
+          $ref: '#/components/schemas/ContactSchema'
+      required:
+        - entity_name
+        - entity_type
+        - contact
+      x-examples:
+        example-1:
+          entity_name: string
+          entity_type: Partner
+          contact:
+            addresses:
+              - street_address_1: 4407 N DIVISION ST
+                street_address_2: STE 516
+                city: SPOKANE
+                state_name: NEW YORK
+                state_code: NY
+                country_name: CANADA
+                country_code: USA
+                zip: '99207'
+                zip4: '1005'
+                is_active: false
+                inactive_date: '2017-07-21'
+                first_fetch: '2017-07-21 17:32:28'
+                last_fetch: '2017-07-21 17:32:28'
+                address_id: '?'
+            phone_numbers:
+              - phone_number: +1 123 42344424
+                source_phone_number: (123) 42344424
+                phone_type: OFFICE
+                is_active: false
+                inactive_date: '2017-07-21'
+                first_fetch: '2017-07-21 17:32:28'
+                last_fetch: '2017-07-21 17:32:28'
+            emails:
+              - email_id: mike@smitch.com
+                is_active: false
+                inactive_date: '2017-07-21'
+                first_fetch: '2017-07-21 17:32:28'
+                last_fetch: '2017-07-21 17:32:28'
+    AvailableBar:
+      title: BAR
+      type: object
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSchema'
+        bar_number:
+          type: string
+        admitted_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+            - Active
+            - Inactive
+            - Not Classified
+            - Unkown
+        inactivation_date:
+          type: string
+          format: date
+        state_code:
+          type: string
+        source_data:
+          $ref: '#/components/schemas/BarSourceData'
+      required:
+        - contact
+        - bar_number
+        - admitted_date
+        - status
+        - inactivation_date
+        - state_code
+        - source_data
+    BarSourceData:
+      title: BAR Source Data
+      type: object
+      properties:
+        name:
+          type: object
+          required:
+            - prefix
+            - first_name
+            - middle_name
+            - last_name
+            - suffix
+            - full_name
+          properties:
+            prefix:
+              type: string
+            first_name:
+              type: string
+            middle_name:
+              type: string
+            last_name:
+              type: string
+            suffix:
+              type: string
+            full_name:
+              type: string
+        status:
+          type: string
+        district:
+          type: string
+        undergraduate_school:
+          type: string
+        law_schools:
+          type: array
+          items:
+            type: object
+            properties:
+              law_school:
+                type: string
+              law_school_graduated_date:
+                type: string
+                format: date
+            required:
+              - law_school
+              - law_school_graduated_date
+        sections:
+          type: array
+          items:
+            type: string
+        practice_areas:
+          type: array
+          items:
+            type: string
+        status_history:
+          type: array
+          items:
+            type: object
+            properties:
+              status_change:
+                type: string
+              effective_date:
+                type: string
+            required:
+              - status_change
+              - effective_date
+        discipline_summaries:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              link:
+                type: string
+              title:
+                type: string
+            required:
+              - date
+              - link
+              - title
+        administrative_actions:
+          type: array
+          items:
+            type: object
+            properties:
+              case_number:
+                type: string
+              description:
+                type: string
+              effective_date:
+                type: string
+              resulting_status:
+                type: string
+              type:
+                type: string
+            required:
+              - case_number
+              - description
+              - effective_date
+              - resulting_status
+              - type
+        legal_specialties:
+          type: array
+          items:
+            type: array
+            items: {}
+        disciplinary_history:
+          type: array
+          items:
+            type: object
+            properties:
+              note:
+                type: string
+              rule:
+                type: string
+              action:
+                type: string
+              complaint:
+                type: string
+              stay_date:
+                type: string
+              case_number:
+                type: string
+              rule_number:
+                type: string
+              date_of_action:
+                type: string
+              type_of_action:
+                type: string
+              reinstated_date:
+                type: string
+              disciplinary_decision:
+                type: string
+              term:
+                type: string
+              status:
+                type: string
+              supreme_court:
+                type: string
+              information:
+                type: string
+              definition:
+                type: string
+              contact_id:
+                type: string
+              entry_date:
+                type: string
+              section_date:
+                type: string
+              probation_date:
+                type: string
+              link:
+                type: string
+            required:
+              - note
+              - rule
+              - action
+              - complaint
+              - stay_date
+              - case_number
+              - rule_number
+              - date_of_action
+              - type_of_action
+              - reinstated_date
+              - disciplinary_decision
+              - term
+              - status
+              - supreme_court
+              - information
+              - definition
+              - contact_id
+              - entry_date
+              - section_date
+              - probation_date
+              - link
+        insurance:
+          type: string
+        juris_type:
+          type: string
+        court_history:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+              start_date:
+                type: string
+              action_comments:
+                type: string
+              reinstated_date:
+                type: string
+            required:
+              - action
+              - start_date
+              - action_comments
+              - reinstated_date
+        statewide_grievance_committee_history:
+          type: array
+          items:
+            type: object
+            properties:
+              final_decision:
+                type: string
+              public_comments:
+                type: string
+              final_decision_date:
+                type: string
+              grievance_complaint_number:
+                type: string
+            required:
+              - final_decision
+              - public_comments
+              - final_decision_date
+              - grievance_complaint_number
+        circuit:
+          type: string
+        firm_size:
+          type: string
+        firm_website:
+          type: string
+        position:
+          type: string
+        services:
+          type: array
+          items:
+            type: string
+        languages:
+          type: array
+          items:
+            type: string
+        committees:
+          type: array
+          items:
+            type: object
+            properties:
+              term:
+                type: string
+              office:
+                type: string
+              committee:
+                type: string
+            required:
+              - term
+              - office
+              - committee
+        court_of_admissions:
+          type: array
+          items:
+            type: object
+            properties:
+              federal:
+                type: string
+              court_state:
+                type: string
+              other_courts:
+                type: string
+            required:
+              - federal
+              - court_state
+              - other_courts
+        ten_year_disciplines:
+          type: array
+          items:
+            type: object
+            properties:
+              reference:
+                type: string
+              action_date:
+                type: string
+              description:
+                type: string
+            required:
+              - reference
+              - action_date
+              - description
+        board_certifications:
+          type: array
+          items:
+            type: object
+            properties:
+              area:
+                type: string
+              year:
+                type: string
+            required:
+              - area
+              - year
+        court_service_email:
+          type: string
+        other_names:
+          type: array
+          items:
+            type: string
+        home_county:
+          type: string
+        status_date:
+          type: string
+        admission_type:
+          type: string
+        appellate_court_district:
+          type: string
+        in_good_standing:
+          type: string
+        parish:
+          type: string
+        board_district:
+          type: string
+        judicial_district:
+          type: string
+        open_action_statuses:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              reason:
+                type: string
+            required:
+              - date
+              - reason
+        first_admitted:
+          type: string
+        public_hearings:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              order:
+                type: string
+              conduct:
+                type: string
+              issued_by:
+                type: string
+              respondent:
+                type: string
+            required:
+              - date
+              - order
+              - conduct
+              - issued_by
+              - respondent
+        other_jurisdictions:
+          type: array
+          items:
+            type: object
+            properties:
+              state:
+                type: string
+              bar_number:
+                type: string
+            required:
+              - state
+              - bar_number
+        dismissals:
+          type: array
+          items:
+            type: string
+        authorized:
+          type: string
+        practice_locations:
+          type: array
+          items:
+            type: string
+        next_registration:
+          type: string
+        appellate_division_department:
+          type: string
+        reason_for_inactivation:
+          type: object
+          required:
+            - link
+            - case_number
+          properties:
+            link:
+              type: string
+            case_number:
+              type: string
+        bio:
+          type: string
+        involvments:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              position:
+                type: string
+            required:
+              - name
+              - type
+              - position
+        years_of_practice:
+          type: string
+        employment_history:
+          type: array
+          items:
+            type: object
+            properties:
+              employer:
+                type: string
+              start_date:
+                type: string
+              end_date:
+                type: string
+            required:
+              - employer
+              - start_date
+              - end_date
+        comments:
+          type: string
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              type:
+                type: string
+              db_no:
+                type: string
+              comments:
+                type: string
+            required:
+              - date
+              - type
+              - db_no
+              - comments
+        pending_proceedings:
+          type: array
+          items:
+            type: string
+        fees_options:
+          type: array
+          items:
+            type: object
+            properties:
+              flat_fees:
+                type: string
+              hourly_rate:
+                type: string
+              payment_plans:
+                type: string
+              contingency_fees:
+                type: string
+              sliding_scale_fees:
+                type: string
+            required:
+              - flat_fees
+              - hourly_rate
+              - payment_plans
+              - contingency_fees
+              - sliding_scale_fees
+        profile_last_certified:
+          type: string
+        attorney_group:
+          type: string
+        expiration_date:
+          type: string
+        license_type:
+          type: string
+        private_law_practice:
+          type: string
+        bar_service_class:
+          type: string
+        last_renewal_date:
+          type: string
+        source_info:
+          type: object
+          required:
+            - unique_id
+            - url
+          properties:
+            unique_id:
+              type: string
+            url:
+              type: string
+              format: uri
+      required:
+        - name
+        - status
+        - district
+        - undergraduate_school
+        - law_schools
+        - sections
+        - practice_areas
+        - status_history
+        - discipline_summaries
+        - administrative_actions
+        - legal_specialties
+        - disciplinary_history
+        - insurance
+        - juris_type
+        - court_history
+        - statewide_grievance_committee_history
+        - circuit
+        - firm_size
+        - firm_website
+        - position
+        - services
+        - languages
+        - committees
+        - court_of_admissions
+        - ten_year_disciplines
+        - board_certifications
+        - court_service_email
+        - other_names
+        - home_county
+        - status_date
+        - admission_type
+        - appellate_court_district
+        - in_good_standing
+        - parish
+        - board_district
+        - judicial_district
+        - open_action_statuses
+        - first_admitted
+        - public_hearings
+        - other_jurisdictions
+        - dismissals
+        - authorized
+        - practice_locations
+        - next_registration
+        - appellate_division_department
+        - reason_for_inactivation
+        - bio
+        - involvments
+        - years_of_practice
+        - employment_history
+        - comments
+        - history
+        - pending_proceedings
+        - fees_options
+        - profile_last_certified
+        - attorney_group
+        - expiration_date
+        - license_type
+        - private_law_practice
+        - bar_service_class
+        - last_renewal_date
+        - source_info
+    MiniAvailableSOS:
+      title: SOS Number
+      type: object
+      properties:
+        sos_number:
+          type: string
+        state_code:
+          type: string
+      required:
+        - sos_number
+        - state_code
+    CaseTimeline:
+      title: Case Timeline
+      type: array
+      items:
+        type: object
+        properties:
+          first_case_filing_date:
+            type: string
+            description: The first date when the two entities have appeared together in the case. (These dates are determined from case filing dates)
+          last_case_filing_date:
+            type: string
+            description: The last date when the two entities have appeared together in the case. (These dates are determined from case filing dates)
+        required:
+          - first_case_filing_date
+          - last_case_filing_date
+    AssociatedAttorneys:
+      title: Associated Attorneys
+      type: object
+      properties:
+        associated_attorneys:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociatedAttorney'
+        total_results_found:
+          type: integer
+        next_page:
+          type: string
+          description: Next page of results if applicable.
+        total_pages:
+          type: integer
+          description: Total No of pages
+      required:
+        - associated_attorneys
+        - total_results_found
+        - next_page
+        - total_pages
+    AssociatedJudges:
+      title: Associated Judges
+      type: object
+      properties:
+        associated_judges:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociatedJudge'
+        total_results_found:
+          type: integer
+        next_page:
+          type: string
+        total_pages:
+          type: integer
+          description: Total no of pages
+      required:
+        - associated_judges
+        - total_results_found
+        - next_page
+        - total_pages
+    AssociatedLawFirms:
+      title: Associated Law Firms
+      type: object
+      x-examples:
+        example-1:
+          associated_law_firms:
+            - norm_law_firm_id: string
+              name: string
+              sos_data:
+                sos_number: string
+                state_code: string
+              case_timeline:
+                - first_case_filing_date: string
+                  last_case_filing_date: string
+              norm_law_firm_details: string
+          total_results_found: 100
+          next_page: string
+          total_no_pages: 10
+      properties:
+        associated_law_firms:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociatedLawFirm'
+        total_results_found:
+          type: integer
+          description: Total number of associated Law Firms
+        next_page:
+          type: string
+          description: Link to next page of results.
+        total_no_pages:
+          type: integer
+          description: Total number of pages
+      required:
+        - associated_law_firms
+        - total_results_found
+        - next_page
+        - total_no_pages
+    AssociatedParties:
+      title: Associated Parties
+      type: object
+      properties:
+        associated_parties:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociatedParty'
+        total_results_found:
+          type: integer
+        next_page:
+          type: string
+          description: Link to next page of results.
+        total_pages:
+          type: integer
+          description: Total Number of pages
+      required:
+        - associated_parties
+        - total_results_found
+        - next_page
+        - total_pages
+      x-examples:
+        example-1:
+          associated_parties:
+            - norm_party_id: string
+              name: string
+              sos_data:
+                sos_number: string
+                state_code: string
+              case_timeline:
+                - first_case_filing_date: string
+                  last_case_filing_date: string
+              norm_party_details: string
+          total_results_found: 0
+          next_page: string
+          total_pages: 0
+    JudgePublicData:
+      title: JudgePublicData
+      type: object
+      properties:
+        aba_ratings:
+          type: array
+          items:
+            type: object
+            properties:
+              rating:
+                type: string
+              year:
+                type: string
+            required:
+              - rating
+              - year
+        contact:
+          $ref: '#/components/schemas/ContactSchema'
+        bio:
+          type: object
+          required:
+            - ethinicity
+            - birth_date
+            - birth_city
+            - death_date
+            - death_city
+            - death_state
+            - birth_state
+          properties:
+            ethinicity:
+              type: string
+            birth_date:
+              type: string
+            birth_city:
+              type: string
+            death_date:
+              type: string
+            death_city:
+              type: string
+            death_state:
+              type: string
+            birth_state:
+              type: string
+            '':
+              type: string
+        education:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        professional_career:
+          type: string
+        nomination_date:
+          type: string
+        service_history:
+          type: object
+          required:
+            - termination_date
+            - reason_for_termination
+            - appointed_by
+          properties:
+            termination_date:
+              type: string
+            reason_for_termination:
+              type: string
+            appointed_by:
+              type: string
+        status:
+          type: string
+      required:
+        - aba_ratings
+        - contact
+        - bio
+        - education
+        - aliases
+        - professional_career
+        - nomination_date
+        - service_history
+        - status
+    Organization:
+      title: Organization
+      type: object
+      properties:
+        norm_organization_id:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        sos_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableSOS'
+        organization_type:
+          type: string
+          enum:
+            - business
+            - government-agency
+        lei:
+          type: string
+        cik:
+          type: string
+        ticker:
+          type: string
+        sic:
+          type: string
+        sic_description:
+          type: string
+        naics:
+          type: string
+        naics_description:
+          type: string
+        is_party_with_cases:
+          type: boolean
+        norm_party_details:
+          type: string
+        is_law_firm_with_cases:
+          type: boolean
+        norm_law_firm_details:
+          type: string
+      required:
+        - norm_organization_id
+        - name
+        - version
+        - sos_data
+        - organization_type
+        - lei
+        - cik
+        - ticker
+        - sic
+        - sic_description
+        - naics
+        - naics_description
+        - is_party_with_cases
+        - norm_party_details
+        - is_law_firm_with_cases
+    MiniAvailableStateBars:
+      title: BAR Number
+      type: object
+      properties:
+        bar_number:
+          type: string
+        state_code:
+          type: string
+      required:
+        - bar_number
+        - state_code
+    AssociatedJudge:
+      title: Associated Norm Judge
+      type: object
+      description: Associated Judge
+      properties:
+        norm_judge_id:
+          type: string
+        version:
+          type: string
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        last_name:
+          type: string
+        full_name:
+          type: string
+        case_timeline:
+          $ref: '#/components/schemas/CaseTimeline'
+        norm_judge_details:
+          type: string
+      required:
+        - norm_judge_id
+        - version
+        - first_name
+        - middle_name
+        - last_name
+        - full_name
+        - case_timeline
+        - norm_judge_details
+    AssociatedLawFirm:
+      title: Associated Norm Law Firm
+      type: object
+      properties:
+        norm_law_firm_id:
+          type: string
+        name:
+          type: string
+        sos_data:
+          $ref: '#/components/schemas/MiniAvailableSOS'
+        case_timeline:
+          $ref: '#/components/schemas/CaseTimeline'
+        norm_law_firm_details:
+          type: string
+      required:
+        - norm_law_firm_id
+        - name
+        - sos_data
+        - case_timeline
+        - norm_law_firm_details
+    AssociatedParty:
+      title: Associated Norm Party
+      type: object
+      properties:
+        norm_party_id:
+          type: string
+        name:
+          type: string
+        sos_data:
+          $ref: '#/components/schemas/MiniAvailableSOS'
+        case_timeline:
+          $ref: '#/components/schemas/CaseTimeline'
+        norm_party_details:
+          type: string
+      required:
+        - norm_party_id
+        - name
+        - sos_data
+        - case_timeline
+        - norm_party_details
+    AssociatedAttorney:
+      title: Associated Norm Attorney
+      type: object
+      properties:
+        norm_attorney_id:
+          type: string
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        last_name:
+          type: string
+        full_name:
+          type: string
+        state_bar_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MiniAvailableStateBars'
+        case_timeline:
+          type: array
+          items:
+            title: CaseTimeline
+            type: array
+            items:
+              type: object
+              properties:
+                first_case_filing_date:
+                  type: string
+                  description: The first date when the two entities have appeared together in the case. (These dates are determined from case filing dates)
+                last_case_filing_date:
+                  type: string
+                  description: The last date when the two entities have appeared together in the case. (These dates are determined from case filing dates)
+        norm_attorney_details:
+          type: string
+        version:
+          type: string
+      required:
+        - norm_attorney_id
+        - first_name
+        - middle_name
+        - last_name
+        - full_name
+        - state_bar_data
+        - case_timeline
+        - norm_attorney_details
+    Party:
+      title: Norm Party
+      type: object
+      x-examples:
+        example-1: {}
+      properties:
+        org_data:
+          $ref: '#/components/schemas/Organization'
+        court_records_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/court_data'
+        norm_party_id:
+          type: string
+        party_entity_type:
+          type: string
+          enum:
+            - individual
+            - organization
+          example: organization
+      required:
+        - court_records_data
+        - norm_party_id
+        - party_entity_type
+    LawFirm:
+      title: Norm Law Firm
+      type: object
+      description: Schema for Law Firm containing Organization sub-field
+      x-examples:
+        example-1: {}
+      properties:
+        norm_law_firm_id:
+          type: string
+        org_data:
+          $ref: '#/components/schemas/Organization'
+        court_records_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/court_data'
+      required:
+        - norm_law_firm_id
+        - org_data
+        - court_records_data
+    CaseTypeCategory:
+      title: Case Type Category
+      type: object
+      description: Destcribes the properties of a Case Type Category
+      x-examples:
+        example-1:
+          name: Chapter 13
+          id: 12
+          legacy_id: 123
+          source_name: CHAPTER 13
+          category:
+            name: Civil
+            id: 42
+            legacy_id: 26
+          subcategory:
+            name: Bankruptcy
+            id: 14
+            legacy_id: 2
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        legacy_id:
+          type: string
+        subcategory:
+          type: object
+          required:
+            - name
+            - id
+            - legacy_id
+            - case_type
+          properties:
+            name:
+              type: string
+            id:
+              type: string
+            legacy_id:
+              type: string
+            case_type:
+              type: object
+              required:
+                - name
+                - id
+                - legacy_id
+                - source_name
+              properties:
+                name:
+                  type: string
+                id:
+                  type: integer
+                legacy_id:
+                  type: integer
+                source_name:
+                  type: string
+      required:
+        - name
+        - id
+        - legacy_id
+        - subcategory
+    CourtHouse:
+      title: Courthouse
+      type: object
+      description: Courthouse properties
+      x-examples:
+        example-1:
+          name: Pennsylvania Western Bankruptcy
+          id: 224
+          legacy_id: 125
+          source_name: PAWBKE
+          latitude: 36.778259
+          longitude: -119.417931
+      properties:
+        name:
+          type: string
+        id:
+          type: integer
+        legacy_id:
+          type: integer
+        source_name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required:
+        - name
+        - id
+        - legacy_id
+        - source_name
+        - latitude
+        - longitude
+    CourtSystem:
+      title: Court System
+      type: object
+      description: Court System Properites
+      x-examples:
+        example-1:
+          name: U.S. Bankruptcy Courts
+          id: 102
+          legacy_id: 54
+          latitude: 36.7742
+          longitude: -119.52
+          source_name: 'null'
+      properties:
+        name:
+          type: string
+          example: U.S. Bankruptcy Courts
+        id:
+          type: integer
+          example: 102
+        legacy_id:
+          type: integer
+          example: 54
+        latitude:
+          type: number
+        longitude:
+          type: number
+        source_name:
+          type: string
+      required:
+        - name
+        - id
+        - legacy_id
+        - latitude
+        - longitude
+        - source_name

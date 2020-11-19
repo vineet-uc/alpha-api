@@ -1,9 +1,14 @@
 openapi: 3.0.0
 
 info:
-  title: Search API's [Alpha]
-  description: Search API's
-  version: "v2 Alpha"
+  title: Search APIs
+  description: Search APIs
+  termsOfService: 'https://unicourt.com/terms-of-service'
+  contact:
+    name: UniCourt Support
+    url: 'https://unicourt.com/developer-hub'
+    email: support@unicourt.com
+  version: V2
 
 servers:
   - url: "http://localhost:9876/v2"
@@ -12,7 +17,7 @@ servers:
     description: Staging server
 
 paths:
-  /search/query/:
+  /search/case/:
     get:
       security:
         - bearerAuth: []
@@ -52,6 +57,9 @@ paths:
         |**docket_entry_date**|Only search through dockets with docket_entry date filter.|**docket_entry_date:(from:2020-01-01 to:2020-05-01)** - Find cases with docket action date between 2020-01-01 and 2020-05-01 |
         | **nos** | Find cases by Nature of Suit Codes. | **nos:1730** |
         <br><br>
+
+
+
         ## Using the hierarchy of filters below, you can search for cases more specifically.
         ```
           case_number
@@ -129,6 +137,8 @@ paths:
                   to
         ```
         <br><br>
+
+
         ## Party Sub Filter Examples
         |Example |Explanation |
         |---|---|
