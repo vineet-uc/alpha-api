@@ -1,0 +1,163 @@
+openapi: 3.0.0
+
+info:
+  title: Search APIs
+  description: Search APIs
+  termsOfService: 'https://unicourt.com/terms-of-service'
+  contact:
+    name: UniCourt Support
+    url: 'https://unicourt.com/developer-hub'
+    email: support@unicourt.com
+  version: V2
+
+servers:
+  - url: "http://localhost:9876/v2"
+    description: Local server
+  - url: "http://staging-alb.unicourt.internal:9876/v2"
+    description: Staging server
+
+paths:
+  /search/case/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Search APIs
+      description: |
+        ## Terms and Connectors Searching
+        | Connector | Description  | Example |
+        | ------| ------|------|
+        | **AND** |Find cases containing all connected terms. The word AND does not have to be capitalized.|**personal AND injury**|
+        | **OR**  |Find cases containing any connected term. The word OR does not have to be capitalized.| **order OR decision**|
+        | **NOT** |Excludes cases.| **personal AND NOT injury**.  Find cases with the word “personal” and not “injury”.|
+        | **“[phrase]”** |Finds an exact phrase| **"personal injury”** |
+        | **~**  |Find cases which have terms within a given proximity of each other.|**“personal injury” ~ 5** - Find cases with “personal” within five words of “injury”. |
+        | **( … )** |Parenthesis may be used to group sets of terms of connectors| **personal AND (injury OR fall)** - Find cases with the word personal injury or personal fall.|
+        | **jurisdiction**|Find cases in a particular court|**jurisdiction:(New York)** - Find cases in New York courts jurisdiction:(federal AND NOT state) Find cases in the federal court, but not in state courts.|
+        |**case_status**|Find cases for a particular case status|**status: (Disposed)** - all disposed cases.<br>**case_status:(Pending AND Appeal)** Find all pending and appeal cases.|
+        | **case_type**|Find cases with the specified case type | **case_type:(Property)** - cases with case type “property”. <br>**case_type:(Bankruptcy AND Contract)** - Find cases with case type “bankruptcy” and “contract”.<br>**case_type:(civil AND "Personal Injury" AND Motor)** - Find cases with case type category “civil” AND group “Personal Injury” AND name matching “Motor”|
+        | **case_number** |Find text  in a particular case_number field | **case_number: 2020-L-007212** - Find cases whose case number matches given case number number.|
+        | **case_name** |Find text  in a particular case_name field| **case_name: THOMAS P. CARNEY, INC. VS BEHLER JAMES Et Al** - Find cases whose case name matches given terms.|
+        | **judge** |Find documents in a case involving a particular judge | **judge:Posner** - Find cases involving Judge Posner.|
+        | **party** | Find documents in a case involving a particular party| **party:Apple** - Find cases involving apple. |
+        | **party_type** | Find cases with the specified party type | **party:(party_type:plaintiff)** - Find cases with party type “plaintiff”<br> **party:(party_type:defendant AND representation:"attorney represented")** - Find cases where party is acting as defendant and represented by the attorney.|
+        |**representation**|Find cases with the specified party representation type|**party:(representation:"attorney represented")** - Find cases where party is represented by the attorney |
+        | **firm** |Find documents in a case involving a particular firm | **firm:(“Weil Gotshal”)** - Find cases involving Weil Gotshal. |
+        | **attorney** | Find documents in a case involving a particular attorney | **attorney:(David Boies) ~4** - Find cases involving the attorney David Boies. |
+        |**norm_id**|Search cases with particular norm ID associated with it party, attorney, judge or lawfirm.|**party:(norm_id:(BMYir24opsGye AND kcoC9QyhWnoaf AND jRJxwwdKasTz8))**|
+        | **has** | Only search results which have particular information associated with the case.<br>Firm,  attorney, attorney_email, attorney_phone, judgment | **has: firm** - Only search results which have law firm information associated with the case.<br>**has:attorney** - Only search results which have attorney name information associated with the case.<br>**has:attorney_email** - Only search results which have attorney email information.<br>**has:attorney_phone** - Only search results which have attorney phone information.<br>**has:judgment** - Only search results which have judgment information|
+        | **num_party** | Search for cases with a specified number of parties. | **num_party:[10 TO 100]** - Find cases involving 10 to 100 parties. |
+        | **num_firm** | Search for cases with a specified number of law firms involved. | **num_firm:[ TO 2]** - Find cases involving at most 2 law firms. |
+        | **num_attorney** | Search for cases with a specified number of attorneys involved. | **num_attorney:[2 TO 40]** - Find cases involving 2 to 40 attorneys. |
+        | **filing_date** | Search for cases based on the most recently filed in the unicourt. | **date_filed:(from:2015-03-15 to:2016-012-01)** - Find where the most recently filed cases between March 15, 2015 and December 1, 2016 (inclusive). |
+        | **first_fetch_date** | Search for cases based on the time they were added to unicourt. | **date_created:(from:3days)** - Find cases that were created in the past three days. |
+        | **last_fetch_date** &nbsp;| Search for cases based on time they were last updated on unicourt. | **date_last_updated:(from:60days to:30days)** - Find cases that were last updated on unicourt from 60 days ago to 30 days ago. |
+        |**last_fetch_date_with_updates**&nbsp;|Search for cases based on the date that last update changes were found on the court site.|**last_update_changes_found:(from:6days to:3days)** - Find cases where the last updated changes found on court site are between 3 to 6 days.|
+        |**docket**|Only search through dockets with optional action date filter.|**docket:(Motion to Compel Responses AND docket_entry_date:(from:2020-01-01 to:2020-05-01))** - Find cases with docket text “Motion to Compel Responses” and action date between 2020-01-01 and 2020-05-01|
+        |**docket_entry_date**|Only search through dockets with docket_entry date filter.|**docket_entry_date:(from:2020-01-01 to:2020-05-01)** - Find cases with docket action date between 2020-01-01 and 2020-05-01 |
+        | **nos** | Find cases by Nature of Suit Codes. | **nos:1730** |
+        <br><br>
+
+
+
+        ## Using the hierarchy of filters below, you can search for cases more specifically.
+        ```
+          case_number
+          case_name
+          filing_date
+              from
+              to
+          first_fetch_date
+              from
+              to
+          last_fetch_date
+              from
+              to
+          last_fetch_date_with_updates
+              from
+              to
+          jurisdiction
+              id
+              nemonic_name
+              name
+          case_type
+              id
+              nemonic_name
+              name
+          case_status
+              id
+              nemonic_name
+              name
+          docket_tag
+              id
+              nemonic_name
+              name
+          party
+              name
+              party_type
+                  name
+                  abbreviation
+                  id
+              representation
+                  name
+                  abbreviation
+                  id
+              entity_type
+              norm_id
+              has_email
+              has_phone
+              has_address
+              num_party
+          attorney
+              name
+              attorney_type
+                  name
+                  abbreviation
+                  id
+              firm_name
+              norm_id
+              norm_firm_id
+              has_email
+              has_phone
+              has_address
+              has_firm
+              num_attorney
+              num_firm
+          judge
+              name
+              norm_id
+              judge_type
+                  id
+                  name
+                  abbreviation
+          docket
+              text
+              date
+                  from
+                  to
+        ```
+        <br><br>
+
+
+        ## Party Sub Filter Examples
+        |Example |Explanation |
+        |---|---|
+        |**party:(name:google AND party_type:plaintiff)**|Find cases where Google is acting as the plaintiff.|
+        |**party:(name:google AND representation:"attorney represented" AND party_type:defendant) AND attorney:"john smith"**|Find cases where google is acting as a defendant and represented by the attorney John Smith.|
+
+      summary: search any keyword with attribute and filters.
+      parameters:
+        - $ref: "query/get_request.yaml#/components/parameters/qParam"
+        - $ref: "query/get_request.yaml#/components/parameters/pageParam"
+        - $ref: "query/get_request.yaml#/components/parameters/sortParam"
+        - $ref: "query/get_request.yaml#/components/parameters/orderParam"
+        - $ref: "query/get_request.yaml#/components/parameters/limitParam"
+      responses:
+        "200":
+          $ref: "query/response.yaml#/components/responses/search_api"
+        "500":
+          $ref: "common_response.yaml#/components/responses/500"
+        "404":
+          $ref: "common_response.yaml#/components/responses/404"
+        "401":
+          $ref: "common_response.yaml#/components/responses/401"

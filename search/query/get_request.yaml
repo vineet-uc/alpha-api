@@ -1,0 +1,57 @@
+openapi: 3.0.0
+
+components:
+  parameters:
+    qParam:
+      in: query
+      name: q
+      schema:
+        type: string
+        minLength: 3,
+        maxLength: 250
+      example: "Search Terms"
+      required: true
+      description: |
+        The url encoded query you are searching for.
+        The query can be as simple as a keyword, but supports many additional options and filters.
+        All options are documented above</a>
+    pageParam:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        example: 1
+      description: |
+        Page number.
+        - minimum: 1
+        - maximum: 100
+    sortParam:
+      in: query
+      name: sort
+      schema:
+        type: string
+        enum: [filing_date, relevancy]
+      default: filing_date_ts
+      example: relevancy
+      description: Sort field.
+
+    orderParam:
+      in: query
+      name: order
+      schema:
+        type: string
+        enum: [asc,desc]
+      default: desc
+      example: desc
+      description: Sort order.
+
+    limitParam:
+      in: query
+      name: limit
+      schema:
+        type: integer
+      default: 10
+      example: 10
+      description: items per page.
