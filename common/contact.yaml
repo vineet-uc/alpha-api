@@ -1,0 +1,283 @@
+openapi: 3.0.1
+
+components:
+  schemas:
+    Address:
+      type: object
+      description: Address object Data Schema
+      required:
+      - street_address_1
+      - street_address_2
+      - city
+      - state_name
+      - state_code
+      - country_name
+      - country_code
+      - zip
+      - zip4
+      - is_active
+      - inactive_date
+      - first_fetch
+      - last_fetch
+      - address_id
+      properties:
+        street_address_1:
+          type: string
+          nullable: false
+          description: 1st Part of the street address
+          example: 4407 N DIVISION ST
+          maxLength: 250
+        street_address_2:
+          type: string
+          nullable: true
+          description: 2nd Part of the street address
+          example: STE 516
+          maxLength: 150
+        city:
+          type: string
+          nullable: true
+          description: City
+          example: SPOKANE
+          maxLength: 100
+        state_name:
+          type: string
+          nullable: false
+          description: State Name if present else default value
+          example: NEW YORK
+          default: UNKNOWN
+          maxLength: 100
+        state_code:
+          type: string
+          enum:
+          - AL
+          - AK
+          - AZ
+          - AR
+          - CA
+          - CO
+          - CT
+          - DE
+          - FL
+          - GA
+          - HI
+          - ID
+          - IL
+          - IN
+          - IA
+          - KS
+          - KY
+          - LA
+          - ME
+          - MD
+          - MA
+          - MI
+          - MN
+          - MS
+          - MO
+          - MT
+          - NE
+          - NV
+          - NH
+          - NJ
+          - NM
+          - NY
+          - NC
+          - ND
+          - OH
+          - OK
+          - OR
+          - PA
+          - RI
+          - SC
+          - SD
+          - TN
+          - TX
+          - UT
+          - VT
+          - VA
+          - WA
+          - DC
+          - WV
+          - WI
+          - WY
+          nullable: true
+          description: State Code if the state is a US state else contains null
+          example: NY
+          maxLength: 2
+          minLength: 2
+        country_name:
+          type: string
+          nullable: false
+          description: Country Name if present else default value
+          example: CANADA
+          default: UNKNOWN
+          maxLength: 100
+        country_code:
+          type: string
+          nullable: true
+          description: ISO 3166-1 alpha-3 (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#Officially_assigned_code_elements)
+            Code of the country if country name is present
+          example: USA
+          maxLength: 3
+          minLength: 3
+        zip:
+          type: string
+          nullable: true
+          description: Zip code of the address
+          example: 99207, M6C2P7
+          maxLength: 10
+        zip4:
+          type: string
+          nullable: true
+          description: 4 digit extension of zip, if the address is a US address
+          example: '1005'
+          minLength: 4
+          maxLength: 4
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the address is active or not
+          example: 'false'
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: if the address is not active, this field contains the date
+            on which it got inactivated. this field will be null if the address is
+            active
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+        address_id:
+          type: integer
+          nullable: false
+          description: db id of the record
+          example: 100
+    Phone:
+      type: object
+      description: Phone object Data Schema
+      required:
+      - phone_number
+      - phone_type
+      - is_active
+      - inactive_date
+      - first_fetch
+      - last_fetch
+      properties:
+        phone_number:
+          type: string
+          nullable: false
+          description: Phone Number
+          example: (123) 42344424
+          maxLength: 30
+        phone_type:
+          type: string
+          nullable: false
+          description: Resolved Phone type (ideally from master data)
+          example: OFFICE
+          maxLength: 250
+          enum:
+          - DEFAULT
+          - OFFICE
+          - FAX
+          - PHONE
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the phone is active or not
+          example: 'false'
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: if the phone is not active, this field contains the date on
+            which it got inactivated. this field will be null if the phone is active
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+    Email:
+      type: object
+      description: Email object Data Schema
+      required:
+      - email_id
+      - is_active
+      - inactive_date
+      - first_fetch
+      - last_fetch
+      properties:
+        email_id:
+          type: string
+          nullable: false
+          description: email id
+          example: mike@smitch.com
+          maxLength: 100
+        is_active:
+          type: boolean
+          nullable: false
+          description: boolean indicating if the email is active or not
+          example: 'false'
+        inactive_date:
+          type: string
+          format: date
+          nullable: true
+          description: if the email is not active, this field contains the date on
+            which it got inactivated. this field will be null if the email is active
+          example: '2017-07-21'
+        first_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record is created in the db
+          example: '2017-07-21 17:32:28'
+        last_fetch:
+          type: string
+          format: date-time
+          nullable: false
+          description: date at which this record was updated in the db
+          example: '2017-07-21 17:32:28'
+    Contact:
+      type: object
+      description: Contact object Data Schema
+      required:
+      - addresses
+      - phone_numbers
+      - emails
+      properties:
+        addresses:
+          type: array
+          description: List of available addresses
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Address'
+        phone_numbers:
+          type: array
+          description: List of available phone numbers
+          items:
+            $ref: '#/components/schemas/Phone'
+          nullable: true
+        emails:
+          type: array
+          description: List of available emails
+          items:
+            $ref: '#/components/schemas/Email'
+          nullable: true

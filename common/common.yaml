@@ -1,0 +1,37 @@
+openapi: 3.0.2
+info:
+  title: common
+  version: '1.0'
+paths: {}
+components:
+  schemas:
+    error:
+      type: object
+      minProperties: 1
+      maxProperties: 1
+      nullable: false
+      x-examples: {}
+      description: When UniCourt encounters the error while validating the API request or any error occurred while processing the API request this object will be sent with the custom error code and message that will convey the respective error.
+      properties:
+        error:
+          $ref: '#/components/schemas/error_model'
+      required:
+        - error
+    error_model:
+      title: error
+      type: object
+      description: Error object contains specific error code and its message related to the api request validation error or eror occurred during api request processing.
+      properties:
+        code:
+          type: string
+          description: Indicates the type of error occured.
+          minLength: 1
+          maxLength: 75
+        message:
+          type: string
+          description: Indicates the error message that describes the error code.
+          minLength: 1
+          maxLength: 255
+      required:
+        - code
+        - message

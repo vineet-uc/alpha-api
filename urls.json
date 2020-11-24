@@ -9,5 +9,11 @@
     "module": "PCL API's",
     "description": "PCL API's",
     "path": "pcl/pcl_search.yaml"
+  },
+  {
+    "application": "Case",
+    "module": "Case API's",
+    "description": "Case API's",
+    "path": "case/case.yaml"
   }
 ]
