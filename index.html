@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniCourt API's</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.32.5/swagger-ui.css" integrity="sha512-1gs56cGdIn+SDweW3bEtMcVVxX+oWJdpKHztczu8WpE3GmZquxIpjg4IoOPRJ8hmTPLiZriIW38uE+059dcYcA==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.32.5/swagger-ui-standalone-preset.js" integrity="sha512-lPQbvIjO5uZcUA1xHLmiHFOSFNLW9JneBeW2Om6BRJk1TCPiPgK3066v+CAwl5lVnKb5MHvHrNxphNDRxziBTA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.32.5/swagger-ui-bundle.js" integrity="sha512-AFmS0sDr4qMXdHEtnXwahj5Htbj5rGlBmriIWs3Khb4Z4SdnFDBvaEWCZgfEcbgwn/M1Ya3VKSA6+7DcclHgVg==" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <select class="form-control" id="api-select">
+
+    </select>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    OAS Viewer
+                </a>
+                <div class="dropdown-menu ml-auto" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#" id="redoc_anchor">Redoc</a>
+                    <a class="dropdown-item" href="#" id="swagger_anchor">Swagger</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div id="oas-ui" >
+    <redoc id="redoc-ui" ></redoc>
+    <div id="swagger-ui"> </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.40/bundles/redoc.standalone.js"></script>
+
+
+
+<script>
+    document.getElementById("swagger-ui").style.display = "none";
+
+    document.getElementById("redoc_anchor").onclick = function() {
+        document.getElementById("swagger-ui").style.display = "none";
+        document.getElementById("redoc-ui").style.display = "block";
+    };
+
+    document.getElementById("swagger_anchor").onclick = function() {
+        document.getElementById("redoc-ui").style.display = "none";
+        document.getElementById("swagger-ui").style.display = "block";
+        document.getElementsByClassName('topbar')[0].style.display = "none";
+
+    };
+
+    $(document).ready(function(){
+        $.getJSON("urls.json", function(data){
+            var parent_select = document.getElementById("api-select");
+            
+            for (var i = 0; i < data.length; i++) {
+                var newElement = document.createElement("option");
+                newElement.setAttribute('value', data[i].path);
+                newElement.text = data[i].description
+                parent_select.appendChild(newElement);
+            }
+            loadSwaggerUI(data[0].path)
+            loadRedocUI(data[0].path)
+        }).fail(function(){
+            console.log("An error has occurred.");
+        });
+    });
+
+    $('#api-select').on('change', function() {
+        var value = $(this).val();
+        loadSwaggerUI(value)
+        removeRedocUi()
+        loadRedocUI(value)
+    });
+    
+    function loadSwaggerUI(path) {
+        window.ui = new SwaggerUIBundle({
+                url: path,
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            })
+        document.getElementsByClassName('topbar')[0].style.display = "none";
+    }
+
+    function loadRedocUI(path) {
+        Redoc.init(path, { scrollYOffset: 50 }, document.getElementById('redoc-ui'))
+        if (document.getElementById("swagger-ui").style.display == "block") {
+            document.getElementById("redoc-ui").style.display = "none"
+        }
+        else {
+            document.getElementById("redoc-ui").style.display = "block"
+        }
+    }
+
+    function removeRedocUi() {
+        var element = document.getElementById("redoc-ui");
+        element.parentNode.removeChild(element);
+
+        var parent_element = document.getElementById("oas-ui");
+        var newElement = document.createElement("redoc");
+        newElement.setAttribute('id', "redoc-ui");
+        parent_element.appendChild(newElement);
+
+    }
+    
+</script>
+</body>
+</html>
